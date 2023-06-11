@@ -3,10 +3,12 @@ export interface Customer {
   idHarvest: string;
   idMoneyBird: string;
 
-  city: string;
-  kvkNumber: string;
-  postalCode: string;
+  name: string;
   street: string;
-  url: string;
+  postalCode: string;
+  city: string;
+
+  kvkNumber: string;
   vatNumber: string;
+  url: string;
 }
