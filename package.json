@@ -1,0 +1,27 @@
+{
+  "name": "ngfk-administration",
+  "version": "1.0.0",
+  "private": true,
+  "repository": "https://github.com/ngfk-development/ngfk-administration.git",
+  "license": "MIT",
+  "author": "NGFK Development",
+  "workspaces": [
+    "app/*"
+  ],
+  "scripts": {
+    "build": "yarn clean && yarn workspaces foreach -tv run build",
+    "clean": "yarn workspaces foreach -p run clean",
+    "dev": "yarn workspaces foreach -pvi run dev",
+    "format": "prettier --write . && yarn workspaces foreach -p exec sort-package-json",
+    "format:check": "prettier --check . && yarn workspaces foreach -p exec sort-package-json --check"
+  },
+  "prettier": "@ngfk/config-prettier",
+  "devDependencies": {
+    "@ngfk/config-prettier": "^0.0.1",
+    "@ngfk/config-typescript": "^0.0.1",
+    "prettier": "^2.8.8",
+    "sort-package-json": "^2.4.1",
+    "typescript": "^5.1.3"
+  },
+  "packageManager": "yarn@3.6.0"
+}

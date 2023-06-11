@@ -1,0 +1,55 @@
+services:
+  database:
+    image: postgres:15.2
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: administration
+      POSTGRES_PASSWORD: postgres
+
+  directus:
+    image: directus/directus:10
+    depends_on:
+      - database
+    environment:
+      PUBLIC_URL: http://localhost:8055/
+      KEY: $DIRECTUS_KEY
+      SECRET: $DIRECTUS_SECRET
+
+      ADMIN_EMAIL: admin@ngfk.dev
+      ADMIN_PASSWORD: $DIRECTUS_ADMIN_PASSWORD
+      ADMIN_API_KEY: $DIRECTUS_ADMIN_API_KEY
+
+      DB_CLIENT: postgres
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: administration
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      
+      EXTENSIONS_AUTO_RELOAD: true
+    ports:
+      - 8055:8055
+    volumes:
+      - ./app/directus:/directus/extensions/directus-extension-ngfk-administration
+      - uploads:/directus/uploads
+
+  node:
+    image: node:18
+    command:
+      - /bin/sh
+      - -c
+      - |
+        yarn install
+        yarn dev
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    working_dir: /app
+
+volumes:
+  db_data:
+  node_modules:
+  uploads:
