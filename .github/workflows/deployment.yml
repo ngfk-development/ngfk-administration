@@ -103,7 +103,7 @@ jobs:
       contents: 'read'
       id-token: 'write'
     needs:
-      - terraform_registry
+      - docker_directus
     steps:
       - uses: actions/checkout@main
       - name: Google Cloud Platform authentication
