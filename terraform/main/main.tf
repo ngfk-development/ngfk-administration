@@ -40,48 +40,6 @@ provider "google" {
   zone    = local.zone
 }
 
-module "secret_auth_client_secret" {
-  source      = "./secret"
-  secret_id   = "AUTH_CLIENT_SECRET"
-  secret_data = local.env["AUTH_CLIENT_SECRET"]
-  region      = local.region
-}
-
-module "secret_database_pass" {
-  source      = "./secret"
-  secret_id   = "DATABASE_PASS"
-  secret_data = local.env["DATABASE_PASS"]
-  region      = local.region
-}
-
-module "secret_directus_key" {
-  source      = "./secret"
-  secret_id   = "DIRECTUS_KEY"
-  secret_data = local.env["DIRECTUS_KEY"]
-  region      = local.region
-}
-
-module "secret_directus_secret" {
-  source      = "./secret"
-  secret_id   = "DIRECTUS_SECRET"
-  secret_data = local.env["DIRECTUS_SECRET"]
-  region      = local.region
-}
-
-module "secret_directus_admin_password" {
-  source      = "./secret"
-  secret_id   = "DIRECTUS_ADMIN_PASSWORD"
-  secret_data = local.env["DIRECTUS_ADMIN_PASSWORD"]
-  region      = local.region
-}
-
-module "secret_directus_admin_api_key" {
-  source      = "./secret"
-  secret_id   = "DIRECTUS_ADMIN_API_KEY"
-  secret_data = local.env["DIRECTUS_ADMIN_API_KEY"]
-  region      = local.region
-}
-
 module "database" {
   source = "./database"
 
@@ -98,14 +56,6 @@ module "database" {
 
 module "directus" {
   source = "./directus"
-  depends_on = [
-    module.secret_auth_client_secret,
-    module.secret_database_pass,
-    module.secret_directus_key,
-    module.secret_directus_secret,
-    module.secret_directus_admin_password,
-    module.secret_directus_admin_api_key,
-  ]
 
   project_id = local.project_id
   location   = local.region
