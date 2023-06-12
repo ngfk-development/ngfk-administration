@@ -12,7 +12,8 @@ resource "google_project_service" "secretmanager" {
 }
 
 resource "google_secret_manager_secret" "secret" {
-  secret_id = var.secret_id
+  depends_on = [google_project_service.secretmanager]
+  secret_id  = var.secret_id
 
   replication {
     user_managed {
