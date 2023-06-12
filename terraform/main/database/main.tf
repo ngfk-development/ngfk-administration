@@ -12,6 +12,8 @@ resource "google_project_service" "sqladmin" {
 }
 
 resource "google_sql_database_instance" "instance" {
+  depends_on = [google_project_service.sqladmin]
+
   database_version    = "POSTGRES_15"
   deletion_protection = true
 
