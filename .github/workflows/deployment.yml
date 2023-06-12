@@ -1,0 +1,56 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  GCP_WIP_SA: github-actions@ngfk-administration.iam.gserviceaccount.com
+  GCP_WIP: projects/899041907578/locations/global/workloadIdentityPools/github/providers/github-actions
+
+jobs:
+  terraform_registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@main
+      - name: Authentication gcloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: '${{ env.GCP_WIP }}'
+          service_account: '${{ env.GCP_WIP_SA }}'
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+      - name: Terraform Init
+        working-directory: terraform/registry
+        run: >-
+          terraform init
+          -backend-config="bucket=$GCP_PROJECT-tf-state"
+      - name: Terraform Format
+        working-directory: terraform/registry
+        run: terraform fmt -check
+      - name: Terraform Validate
+        working-directory: terraform/registry
+        run: terraform validate -no-color
+      - name: Terraform Plan
+        # if: github.event_name == 'pull_request'
+        working-directory: terraform/registry
+        run: >-
+          terraform plan
+          -no-color
+          -input=false
+          -var="project_id=$GCP_PROJECT"
+      - name: Terraform Apply
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        working-directory: terraform/registry
+        run: >-
+          terraform apply
+          -auto-approve
+          -input=false
+          -var="project_id=$GCP_PROJECT"
+          -var="verdaccio_image=europe-west4-docker.pkg.dev/$GCP_PROJECT/docker/$VERDACCIO_IMAGE"
