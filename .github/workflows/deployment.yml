@@ -133,6 +133,7 @@ jobs:
           -input=false
           -var="project_id=$GCP_PROJECT"
           -var="region=$GCP_REGION"
+          -var="docker_directus=$DOCKER_DIRECTUS"
       - name: Terraform Apply
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: terraform/main
@@ -142,3 +143,4 @@ jobs:
           -input=false
           -var="project_id=$GCP_PROJECT"
           -var="region=$GCP_REGION"
+          -var="docker_directus=$DOCKER_DIRECTUS"
