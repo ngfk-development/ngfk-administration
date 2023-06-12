@@ -38,6 +38,8 @@ resource "google_project_service" "artifactregistry" {
 }
 
 resource "google_artifact_registry_repository" "docker" {
+  depends_on = [google_project_service.artifactregistry]
+
   project       = local.project_id
   location      = local.region
   repository_id = "docker"
