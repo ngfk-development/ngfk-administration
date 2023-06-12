@@ -7,7 +7,6 @@ export interface Customer {
   street: string;
   postalCode: string;
   city: string;
-
   kvkNumber: string;
   vatNumber: string;
   url: string;

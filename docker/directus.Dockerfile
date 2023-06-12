@@ -17,4 +17,5 @@ COPY --from=build /app/app/directus/database/snapshot.yml /directus/snapshot.yml
 
 CMD : \
   && node /directus/cli.js bootstrap \
+  && node /directus/cli.js schema apply -y /directus/snapshot.yml \
   && node /directus/cli.js start;
