@@ -10,9 +10,10 @@ RUN yarn build
 
 FROM directus/directus:10
 
+COPY --from=build /app/app/directus/dist                  /directus/extensions/directus-extension-ngfk-administration/dist
+COPY --from=build /app/app/directus/package.json          /directus/extensions/directus-extension-ngfk-administration/package.json
+COPY --from=build /app/app/directus/database/migrations   /directus/extensions/migrations
 COPY --from=build /app/app/directus/database/snapshot.yml /directus/snapshot.yml
-COPY --from=build /app/app/directus/database/migrations /directus/extensions/migrations
-COPY --from=build /app/app/directus/dist /directus/extensions/directus-extension-ngfk-administration
 
 CMD : \
   && node /directus/cli.js bootstrap \
