@@ -10,7 +10,6 @@ env:
   GCP_REGION: europe-west4
   GCP_WIP_SA: github-actions@ngfk-administration.iam.gserviceaccount.com
   GCP_WIP: projects/899041907578/locations/global/workloadIdentityPools/github/providers/github-actions
-  OP_ENV_PATH: op://NGFK Environment/NGFK Administration/notesPlain
 
 jobs:
   # terraform_registry:
@@ -107,7 +106,7 @@ jobs:
         id: env
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          DOTENV: ${{ env.OP_ENV_PATH }}
+          DOTENV: op://NGFK Environment/NGFK Administration/notesPlain
       - name: Create .env file
         run: 'echo "${{ steps.env.outputs.DOTENV }}" >> .env'
       - name: Setup Terraform

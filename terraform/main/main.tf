@@ -48,4 +48,6 @@ module "database" {
   database_name = local.env["DATABASE_NAME"]
   database_user = local.env["DATABASE_USER"]
   database_pass = local.env["DATABASE_PASS"]
+
+  region = local.region
 }

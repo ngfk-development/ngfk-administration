@@ -9,10 +9,10 @@ terraform {
 
 module "secret_database_password" {
   source      = "../secret"
+  region      = var.region
   secret_id   = "DATABASE_PASS"
   secret_data = var.database_pass
 }
-
 
 # data "google_secret_manager_secret_version" "database_password" {
 #   secret = "DATABASE_PASSWORD"

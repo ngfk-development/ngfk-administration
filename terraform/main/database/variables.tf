@@ -20,3 +20,7 @@ variable "database_user" {
 variable "database_pass" {
   type = string
 }
+
+variable "region" {
+  type = string
+}
