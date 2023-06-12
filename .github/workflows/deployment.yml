@@ -10,38 +10,122 @@ env:
   GCP_REGION: europe-west4
   GCP_WIP_SA: github-actions@ngfk-administration.iam.gserviceaccount.com
   GCP_WIP: projects/899041907578/locations/global/workloadIdentityPools/github/providers/github-actions
+  OP_ENV_PATH: op://NGFK Environment/NGFK Administration/notesPlain
 
 jobs:
-  terraform_registry:
+  # terraform_registry:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: 'read'
+  #     id-token: 'write'
+  #   steps:
+  #     - uses: actions/checkout@main
+  #     - name: Authentication gcloud
+  #       id: 'auth'
+  #       uses: 'google-github-actions/auth@v1'
+  #       with:
+  #         token_format: 'access_token'
+  #         workload_identity_provider: '${{ env.GCP_WIP }}'
+  #         service_account: '${{ env.GCP_WIP_SA }}'
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v1
+  #     - name: Terraform Init
+  #       working-directory: terraform/registry
+  #       run: >-
+  #         terraform init
+  #         -backend-config="bucket=$GCP_PROJECT-tf-state"
+  #     - name: Terraform Format
+  #       working-directory: terraform/registry
+  #       run: terraform fmt -check
+  #     - name: Terraform Validate
+  #       working-directory: terraform/registry
+  #       run: terraform validate -no-color
+  #     - name: Terraform Plan
+  #       if: github.event_name == 'pull_request'
+  #       working-directory: terraform/registry
+  #       run: >-
+  #         terraform plan
+  #         -no-color
+  #         -input=false
+  #         -var="project_id=$GCP_PROJECT"
+  #         -var="region=$GCP_REGION"
+  #     - name: Terraform Apply
+  #       # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #       working-directory: terraform/registry
+  #       run: >-
+  #         terraform apply
+  #         -auto-approve
+  #         -input=false
+  #         -var="project_id=$GCP_PROJECT"
+  #         -var="region=$GCP_REGION"
+
+  # docker_directus:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: 'read'
+  #     id-token: 'write'
+  #   needs:
+  #     - terraform_registry
+  #   steps:
+  #     - uses: actions/checkout@main
+  #     - name: Authentication gcloud
+  #       id: 'auth'
+  #       uses: 'google-github-actions/auth@v1'
+  #       with:
+  #         token_format: 'access_token'
+  #         workload_identity_provider: '${{ env.GCP_WIP }}'
+  #         service_account: '${{ env.GCP_WIP_SA }}'
+  #     - name: Authenticate docker
+  #       uses: 'docker/login-action@v1'
+  #       with:
+  #         registry: '${{ env.GCP_REGION }}-docker.pkg.dev'
+  #         username: 'oauth2accesstoken'
+  #         password: '${{ steps.auth.outputs.access_token }}'
+  #     - name: Build docker image
+  #       run: docker build . -f docker/directus.Dockerfile -t $DOCKER_DIRECTUS
+  #     - name: Tag docker image
+  #       run: docker tag $DOCKER_DIRECTUS $GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS
+  #     - name: Push docker image
+  #       # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #       run: docker push $GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS
+
+  terraform_main:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
     steps:
       - uses: actions/checkout@main
-      - name: Authentication gcloud
-        id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - name: Google Cloud Platform authentication
+        uses: google-github-actions/auth@v1
         with:
-          token_format: 'access_token'
-          workload_identity_provider: '${{ env.GCP_WIP }}'
-          service_account: '${{ env.GCP_WIP_SA }}'
+          token_format: access_token
+          workload_identity_provider: ${{ env.GCP_WIP }}
+          service_account: ${{ env.GCP_WIP_SA }}
+      - name: 1Password environment
+        uses: 1password/load-secrets-action@v1
+        id: env
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          DOTENV: ${{ env.OP_ENV_PATH }}
+      - name: Create .env file
+        run: 'echo "${{ steps.env.outputs.DOTENV }}" >> .env'
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
-        working-directory: terraform/registry
+        working-directory: terraform/main
         run: >-
           terraform init
           -backend-config="bucket=$GCP_PROJECT-tf-state"
       - name: Terraform Format
-        working-directory: terraform/registry
+        working-directory: terraform/main
         run: terraform fmt -check
       - name: Terraform Validate
-        working-directory: terraform/registry
+        working-directory: terraform/main
         run: terraform validate -no-color
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
-        working-directory: terraform/registry
+        working-directory: terraform/main
         run: >-
           terraform plan
           -no-color
@@ -50,40 +134,10 @@ jobs:
           -var="region=$GCP_REGION"
       - name: Terraform Apply
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        working-directory: terraform/registry
+        working-directory: terraform/main
         run: >-
           terraform apply
           -auto-approve
           -input=false
           -var="project_id=$GCP_PROJECT"
           -var="region=$GCP_REGION"
-
-  docker_directus:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    needs:
-      - terraform_registry
-    steps:
-      - uses: actions/checkout@main
-      - name: Authentication gcloud
-        id: 'auth'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          token_format: 'access_token'
-          workload_identity_provider: '${{ env.GCP_WIP }}'
-          service_account: '${{ env.GCP_WIP_SA }}'
-      - name: Authenticate docker
-        uses: 'docker/login-action@v1'
-        with:
-          registry: '${{ env.GCP_REGION }}-docker.pkg.dev'
-          username: 'oauth2accesstoken'
-          password: '${{ steps.auth.outputs.access_token }}'
-      - name: Build docker image
-        run: docker build . -f docker/directus.Dockerfile -t $DOCKER_DIRECTUS
-      - name: Tag docker image
-        run: docker tag $DOCKER_DIRECTUS $GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS
-      - name: Push docker image
-        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: docker push $GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS
