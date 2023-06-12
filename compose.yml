@@ -40,9 +40,9 @@ services:
     ports:
       - 8055:8055
     volumes:
+      - ./app/directus:/directus/extensions/directus-extension-ngfk-administration
       - ./app/directus/database/migrations:/directus/extensions/migrations
       - ./app/directus/database/snapshot.yml:/directus/snapshot.yml
-      - ./app/directus:/directus/extensions/directus-extension-ngfk-administration
       - uploads:/directus/uploads
 
   node:
