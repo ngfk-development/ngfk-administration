@@ -104,11 +104,13 @@ jobs:
       - name: 1Password environment
         uses: 1password/load-secrets-action@v1
         id: env
+        with:
+          export-env: false
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           DOTENV: op://NGFK Environment/NGFK Administration/notesPlain
       - name: Create .env file
-        run: 'echo "${{ steps.env.outputs.DOTENV }}" >> .env'
+        run: echo "${{ steps.env.outputs.DOTENV }}" > .env
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
