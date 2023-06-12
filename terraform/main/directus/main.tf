@@ -9,6 +9,10 @@ terraform {
 
 data "google_project" "project" {}
 
+resource "google_project_service" "run" {
+  service = "run.googleapis.com"
+}
+
 resource "google_storage_bucket" "directus_uploads" {
   name                        = var.storage_bucket
   location                    = var.location
@@ -17,9 +21,10 @@ resource "google_storage_bucket" "directus_uploads" {
 }
 
 resource "google_cloud_run_v2_service" "directus" {
-  name     = "directus"
-  location = var.location
-  ingress  = "INGRESS_TRAFFIC_ALL"
+  depends_on = [google_project_service.run]
+  name       = "directus"
+  location   = var.location
+  ingress    = "INGRESS_TRAFFIC_ALL"
 
   template {
     containers {
