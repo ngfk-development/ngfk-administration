@@ -6,6 +6,7 @@ on:
   pull_request:
 
 env:
+  GCP_REGION: europe-west4
   GCP_WIP_SA: github-actions@ngfk-administration.iam.gserviceaccount.com
   GCP_WIP: projects/899041907578/locations/global/workloadIdentityPools/github/providers/github-actions
 
@@ -45,6 +46,7 @@ jobs:
           -no-color
           -input=false
           -var="project_id=$GCP_PROJECT"
+          -var="region=$GCP_REGION"
       - name: Terraform Apply
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: terraform/registry
@@ -53,4 +55,4 @@ jobs:
           -auto-approve
           -input=false
           -var="project_id=$GCP_PROJECT"
-          -var="verdaccio_image=europe-west4-docker.pkg.dev/$GCP_PROJECT/docker/$VERDACCIO_IMAGE"
+          -var="region=$GCP_REGION"
