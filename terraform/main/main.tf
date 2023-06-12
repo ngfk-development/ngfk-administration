@@ -40,6 +40,13 @@ provider "google" {
   zone    = local.zone
 }
 
+module "secret_auth_client_secret" {
+  source      = "./secret"
+  secret_id   = "AUTH_CLIENT_SECRET"
+  secret_data = local.env["AUTH_CLIENT_SECRET"]
+  region      = local.region
+}
+
 module "secret_database_pass" {
   source      = "./secret"
   secret_id   = "DATABASE_PASS"
@@ -75,13 +82,6 @@ module "secret_directus_admin_api_key" {
   region      = local.region
 }
 
-module "secret_auth_client_secret" {
-  source      = "./secret"
-  secret_id   = "AUTH_CLIENT_SECRET"
-  secret_data = local.env["AUTH_CLIENT_SECRET"]
-  region      = local.region
-}
-
 module "database" {
   source = "./database"
 
@@ -98,6 +98,14 @@ module "database" {
 
 module "directus" {
   source = "./directus"
+  depends_on = [
+    module.secret_auth_client_secret,
+    module.secret_database_pass,
+    module.secret_directus_key,
+    module.secret_directus_secret,
+    module.secret_directus_admin_password,
+    module.secret_directus_admin_api_key,
+  ]
 
   project_id = local.project_id
   location   = local.region
