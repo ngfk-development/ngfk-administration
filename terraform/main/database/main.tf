@@ -7,11 +7,8 @@ terraform {
   }
 }
 
-module "secret_database_password" {
-  source      = "../secret"
-  region      = var.region
-  secret_id   = "DATABASE_PASS"
-  secret_data = var.database_pass
+resource "google_project_service" "sqladmin" {
+  service = "sqladmin.googleapis.com"
 }
 
 resource "google_sql_database_instance" "instance" {
