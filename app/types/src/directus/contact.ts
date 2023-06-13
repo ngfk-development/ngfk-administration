@@ -1,6 +1,7 @@
 export interface Contact {
   id: string;
   idHarvest?: string;
+  idMoneybird?: string;
 
   firstName: string;
   lastName: string;

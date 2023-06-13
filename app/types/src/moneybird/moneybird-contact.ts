@@ -1,3 +1,5 @@
+import { MoneybirdCustomField } from './moneybird-custom-field';
+
 export interface MoneybirdContact {
   id: string;
   administration_id: string;
@@ -15,7 +17,5 @@ export interface MoneybirdContact {
   updated_at: Date;
   version: number;
   sales_invoices_url: string;
-  custom_fields: [
-    { id: '390110629108647152'; name: 'Harvest ID'; value: string },
-  ];
+  custom_fields: MoneybirdCustomField[];
 }
