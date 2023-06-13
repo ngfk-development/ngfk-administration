@@ -1,20 +1,17 @@
 import { MoneybirdContact } from './moneybird-contact';
 import { MoneybirdContactPerson } from './moneybird-contact-person';
 
-interface EntityMap {
-  contact: ['ContactPerson', MoneybirdContactPerson];
-  customer: ['Contact', MoneybirdContact];
-}
-
-export interface MoneybirdWebhookPayload<
-  T extends keyof EntityMap = keyof EntityMap,
-> {
+interface MoneybirdWebhookPayloadBase<Type extends string, Entity> {
   action: string;
   administration_id: string;
   entity_id: string;
-  entity_type: EntityMap[T][0];
-  entity: EntityMap[T][1];
+  entity_type: Type;
+  entity: Entity;
   state: string;
   webhook_id: string;
   webhook_token: string;
 }
+
+export type MoneybirdWebhookPayload =
+  | MoneybirdWebhookPayloadBase<'ContactPerson', MoneybirdContactPerson>
+  | MoneybirdWebhookPayloadBase<'Contact', MoneybirdContact>;

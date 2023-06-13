@@ -1,7 +1,7 @@
 export interface Customer {
   id: string;
-  idHarvest: string;
-  idMoneyBird: string;
+  idHarvest?: string;
+  idMoneybird?: string;
 
   name: string;
   street: string;
@@ -9,5 +9,4 @@ export interface Customer {
   city: string;
   kvkNumber: string;
   vatNumber: string;
-  url: string;
 }
