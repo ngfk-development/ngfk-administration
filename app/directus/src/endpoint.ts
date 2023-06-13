@@ -4,7 +4,7 @@ import { moneybirdHook } from './hooks/moneybird-hook';
 
 export default defineEndpoint({
   id: 'hook',
-  handler: (router) => {
-    router.post('/moneybird', moneybirdHook);
+  handler: (router, ctx) => {
+    router.post('/moneybird', (req, res) => moneybirdHook(req, res, ctx));
   },
 });

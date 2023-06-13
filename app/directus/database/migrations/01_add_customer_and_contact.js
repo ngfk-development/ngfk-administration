@@ -11,16 +11,16 @@ export function up(knex) {
 
       table.string('name');
       table.string('street');
-      table.string('postal_code', 7);
+      table.string('postal_code', 6);
       table.string('city');
 
       table.string('kvk_number');
       table.string('vat_number');
-      table.string('url');
     })
     .createTable('app_contact', (table) => {
       table.uuid('id', { primaryKey: true });
       table.string('id_harvest');
+      table.string('id_moneybird');
 
       table.string('first_name').notNullable();
       table.string('last_name').notNullable();
