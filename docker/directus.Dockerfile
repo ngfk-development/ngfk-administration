@@ -8,7 +8,7 @@ RUN yarn install
 RUN yarn build
 
 
-FROM directus/directus:10
+FROM directus/directus:10.3
 
 COPY --from=build /app/app/directus/dist                  /directus/extensions/directus-extension-ngfk-administration/dist
 COPY --from=build /app/app/directus/package.json          /directus/extensions/directus-extension-ngfk-administration/package.json

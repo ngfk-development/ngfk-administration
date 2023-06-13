@@ -1,8 +1,10 @@
 import { defineEndpoint } from '@directus/extensions-sdk';
 
+import { moneybirdHook } from './hooks/moneybird-hook';
+
 export default defineEndpoint({
   id: 'hook',
   handler: (router) => {
-    router.get('/', (_req, res) => res.send('Hello World!'));
+    router.post('/moneybird', moneybirdHook);
   },
 });
