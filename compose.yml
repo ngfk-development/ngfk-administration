@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   directus:
-    image: directus/directus:10
+    image: directus/directus:10.3
     command:
       - /bin/sh
       - -c
