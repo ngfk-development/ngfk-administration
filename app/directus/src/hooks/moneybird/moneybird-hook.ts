@@ -14,13 +14,14 @@ export async function moneybirdHook(
   try {
     const ctx: HookContext = { ...apiCtx, accountability, schema };
     const payload: MoneybirdWebhookPayload = body;
+    const action = payload.action.endsWith('_destroyed') ? 'delete' : 'upsert';
 
     switch (payload.entity_type) {
       case 'Contact':
-        await loadMoneybirdContact(ctx, payload.entity);
+        await loadMoneybirdContact(ctx, payload.entity, action);
         break;
       case 'ContactPerson':
-        await loadMoneybirdContactPerson(ctx, payload.entity);
+        await loadMoneybirdContactPerson(ctx, payload.entity, action);
         break;
     }
 

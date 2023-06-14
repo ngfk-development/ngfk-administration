@@ -15,6 +15,7 @@ import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 export async function loadMoneybirdContactPerson(
   ctx: HookContext,
   entity: MoneybirdContactPerson,
+  action: 'delete' | 'upsert',
   customer?: Customer,
 ) {
   customer ??= await findCustomer(ctx, entity.contact_id);
@@ -28,18 +29,21 @@ export async function loadMoneybirdContactPerson(
     limit: 1,
   });
 
-  const contact: Partial<Contact> = {
-    id: existing?.id ?? randomUUID(),
-    idMoneybird: entity.contact_id,
+  if (action === 'delete') await service.deleteOne(existing.id);
+  else if (action === 'upsert') {
+    const contact: Partial<Contact> = {
+      id: existing?.id ?? randomUUID(),
+      idMoneybird: entity.contact_id,
 
-    firstName: entity.firstname,
-    lastName: entity.lastname,
-    phone: entity.phone,
-    email: entity.email,
-    customer: customer.id,
-  };
+      firstName: entity.firstname,
+      lastName: entity.lastname,
+      phone: entity.phone,
+      email: entity.email,
+      customer: customer.id,
+    };
 
-  await service.upsertOne(camelToSnakeCase(contact));
+    await service.upsertOne(camelToSnakeCase(contact));
+  }
 }
 
 async function findCustomer(ctx: HookContext, id: string) {

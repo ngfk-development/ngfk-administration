@@ -11,6 +11,7 @@ import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 export async function loadMoneybirdContact(
   ctx: HookContext,
   entity: MoneybirdContact,
+  action: 'delete' | 'upsert',
 ) {
   const { ItemsService } = ctx.services;
   const service: ItemsService = new ItemsService('app_customer', ctx);
@@ -29,21 +30,24 @@ export async function loadMoneybirdContact(
     });
   }
 
-  const customer: Customer = {
-    id,
-    idHarvest: harvestField?.value ?? undefined,
-    idMoneybird: entity.id,
+  if (action === 'delete') await service.deleteOne(id);
+  else if (action === 'upsert') {
+    const customer: Customer = {
+      id,
+      idHarvest: harvestField?.value ?? undefined,
+      idMoneybird: entity.id,
 
-    name: entity.company_name,
-    street: entity.address1,
-    postalCode: entity.zipcode,
-    city: entity.city,
-    kvkNumber: entity.chamber_of_commerce,
-    vatNumber: entity.tax_number,
-  };
+      name: entity.company_name,
+      street: entity.address1,
+      postalCode: entity.zipcode,
+      city: entity.city,
+      kvkNumber: entity.chamber_of_commerce,
+      vatNumber: entity.tax_number,
+    };
 
-  await service.upsertOne(camelToSnakeCase(customer));
+    await service.upsertOne(camelToSnakeCase(customer));
 
-  for (const contactPerson of entity.contact_people)
-    await loadMoneybirdContactPerson(ctx, contactPerson, customer);
+    for (const contactPerson of entity.contact_people)
+      await loadMoneybirdContactPerson(ctx, contactPerson, action, customer);
+  }
 }
