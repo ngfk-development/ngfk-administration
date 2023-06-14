@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 
 import { HookContext } from '../../types/hook-context';
 import { loadMoneybirdContact } from './load-moneybird-contact';
+import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
 export async function moneybirdHook(
   { accountability, body, schema }: Request,
@@ -19,7 +20,7 @@ export async function moneybirdHook(
         await loadMoneybirdContact(ctx, payload.entity);
         break;
       case 'ContactPerson':
-        console.log(JSON.stringify(body));
+        await loadMoneybirdContactPerson(ctx, payload.entity);
         break;
     }
 
