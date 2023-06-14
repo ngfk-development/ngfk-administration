@@ -6,6 +6,7 @@ import { ItemsService } from '@directus/api';
 import { moneybird } from '../../clients/moneybird';
 import { HookContext } from '../../types/hook-context';
 import { camelToSnakeCase } from '../../utils/change-casing';
+import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
 export async function loadMoneybirdContact(
   ctx: HookContext,
@@ -42,4 +43,7 @@ export async function loadMoneybirdContact(
   };
 
   await service.upsertOne(camelToSnakeCase(customer));
+
+  for (const contactPerson of entity.contact_people)
+    await loadMoneybirdContactPerson(ctx, contactPerson, customer);
 }

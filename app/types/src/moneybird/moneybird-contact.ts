@@ -1,3 +1,4 @@
+import { MoneybirdContactPerson } from './moneybird-contact-person';
 import { MoneybirdCustomField } from './moneybird-custom-field';
 
 export interface MoneybirdContact {
@@ -17,5 +18,6 @@ export interface MoneybirdContact {
   updated_at: Date;
   version: number;
   sales_invoices_url: string;
+  contact_people: MoneybirdContactPerson[];
   custom_fields: MoneybirdCustomField[];
 }

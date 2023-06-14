@@ -15,8 +15,9 @@ import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 export async function loadMoneybirdContactPerson(
   ctx: HookContext,
   entity: MoneybirdContactPerson,
+  customer?: Customer,
 ) {
-  const customer = await findCustomer(ctx, entity.contact_id);
+  customer ??= await findCustomer(ctx, entity.contact_id);
   if (!customer) return;
 
   const { ItemsService } = ctx.services;
@@ -41,15 +42,13 @@ export async function loadMoneybirdContactPerson(
   await service.upsertOne(camelToSnakeCase(contact));
 }
 
-async function findContactId(ctx: HookContext, id: string) {}
-
 async function findCustomer(ctx: HookContext, id: string) {
   const { ItemsService } = ctx.services;
   const service: ItemsService = new ItemsService('app_customer', ctx);
 
   const moneybirdContact = await fetchMoneybirdContact(id);
   const directusField = moneybird.directusField(moneybirdContact);
-  if (!directusField) return null;
+  if (!directusField) return undefined;
 
   const item = await service.readOne(directusField.value);
   return snakeToCamelCase(item) as Customer;
