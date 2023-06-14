@@ -1,11 +1,14 @@
-import { AbstractServiceOptions } from '@directus/api/dist/types';
-import { getItemsService } from './get-items-service';
+import { ItemsService as Service } from '@directus/api';
+import { camelToSnakeCase } from './change-casing';
+import { HookContext } from '../types/hook-context';
 
 export function upsertItem<T extends Record<string, any>>(
-  services: any,
-  options: AbstractServiceOptions,
+  ctx: HookContext,
   collection: string,
-  item: Partial<T>,
+  data: Partial<T>,
 ) {
-  return getItemsService<T>(services, options, collection).upsertOne(item);
+  const { ItemsService } = ctx.services;
+  const service: Service = new ItemsService(`app_${collection}`, ctx);
+  const item = camelToSnakeCase(data);
+  return service.upsertOne(item);
 }

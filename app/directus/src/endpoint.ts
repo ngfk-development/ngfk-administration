@@ -1,6 +1,6 @@
 import { defineEndpoint } from '@directus/extensions-sdk';
 
-import { moneybirdHook } from './hooks/moneybird-hook';
+import { moneybirdHook } from './hooks/moneybird/moneybird-hook';
 
 export default defineEndpoint({
   id: 'hook',
