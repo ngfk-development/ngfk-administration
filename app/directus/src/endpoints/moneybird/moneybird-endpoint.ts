@@ -6,7 +6,7 @@ import { HookContext } from '../../types/hook-context';
 import { loadMoneybirdContact } from './load-moneybird-contact';
 import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
-export async function moneybirdHook(
+export async function moneybirdEndpoint(
   { accountability, body, schema }: Request,
   res: Response,
   apiCtx: ApiExtensionContext,
