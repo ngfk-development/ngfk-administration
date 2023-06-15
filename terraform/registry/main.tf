@@ -95,3 +95,10 @@ module "secret_moneybird_token" {
   secret_data = local.env["MONEYBIRD_TOKEN"]
   region      = local.region
 }
+
+module "secret_harvest_token" {
+  source      = "./secret"
+  secret_id   = "HARVEST_TOKEN"
+  secret_data = local.env["HARVEST_TOKEN"]
+  region      = local.region
+}

@@ -53,3 +53,11 @@ variable "moneybird_field_directus" {
 variable "moneybird_field_harvest" {
   type = string
 }
+
+variable "harvest_endpoint" {
+  type = string
+}
+
+variable "harvest_account_id" {
+  type = string
+}

@@ -75,4 +75,7 @@ module "directus" {
   moneybird_endpoint       = local.env["MONEYBIRD_ENDPOINT"]
   moneybird_field_directus = local.env["MONEYBIRD_FIELD_DIRECTUS"]
   moneybird_field_harvest  = local.env["MONEYBIRD_FIELD_HARVEST"]
+
+  harvest_endpoint   = local.env["HARVEST_ENDPOINT"]
+  harvest_account_id = local.env["HARVEST_ACCOUNT_ID"]
 }
