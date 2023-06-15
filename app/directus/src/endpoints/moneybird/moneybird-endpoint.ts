@@ -2,7 +2,7 @@ import { MoneybirdWebhookPayload } from '@app/types';
 import { ApiExtensionContext } from '@directus/types';
 import { Request, Response } from 'express';
 
-import { HookContext } from '../../types/hook-context';
+import { ExtensionContext } from '../../types/extension-context';
 import { loadMoneybirdContact } from './load-moneybird-contact';
 import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
@@ -12,7 +12,7 @@ export async function moneybirdEndpoint(
   apiCtx: ApiExtensionContext,
 ) {
   try {
-    const ctx: HookContext = { ...apiCtx, accountability, schema };
+    const ctx: ExtensionContext = { ...apiCtx, accountability, schema };
     const payload: MoneybirdWebhookPayload = body;
     const action = payload.action.endsWith('_destroyed') ? 'delete' : 'upsert';
 

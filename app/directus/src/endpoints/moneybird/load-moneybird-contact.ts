@@ -4,12 +4,12 @@ import { Customer, MoneybirdContact } from '@app/types';
 import { ItemsService } from '@directus/api';
 
 import { moneybird } from '../../clients/moneybird';
-import { HookContext } from '../../types/hook-context';
+import { ExtensionContext } from '../../types/extension-context';
 import { camelToSnakeCase } from '../../utils/change-casing';
 import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
 export async function loadMoneybirdContact(
-  ctx: HookContext,
+  ctx: ExtensionContext,
   entity: MoneybirdContact,
   action: 'delete' | 'upsert',
 ) {

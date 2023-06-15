@@ -34,12 +34,12 @@
       {
         "type": "hook",
         "name": "ngfk-hook",
-        "source": "src/hook.ts"
+        "source": "src/hooks/hook.ts"
       },
       {
         "type": "endpoint",
         "name": "ngfk-endpoint",
-        "source": "src/endpoint.ts"
+        "source": "src/endpoints/endpoint.ts"
       }
     ]
   }

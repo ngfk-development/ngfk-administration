@@ -4,7 +4,7 @@ import {
   SchemaOverview,
 } from '@directus/types';
 
-export type HookContext = ApiExtensionContext & {
+export type ExtensionContext = ApiExtensionContext & {
   accountability: Accountability;
   schema: SchemaOverview;
 };

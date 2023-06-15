@@ -9,11 +9,11 @@ import {
 import { ItemsService } from '@directus/api';
 
 import { moneybird } from '../../clients/moneybird';
-import { HookContext } from '../../types/hook-context';
+import { ExtensionContext } from '../../types/extension-context';
 import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 
 export async function loadMoneybirdContactPerson(
-  ctx: HookContext,
+  ctx: ExtensionContext,
   entity: MoneybirdContactPerson,
   action: 'delete' | 'upsert',
   customer?: Customer,
@@ -46,7 +46,7 @@ export async function loadMoneybirdContactPerson(
   }
 }
 
-async function findCustomer(ctx: HookContext, id: string) {
+async function findCustomer(ctx: ExtensionContext, id: string) {
   const { ItemsService } = ctx.services;
   const service: ItemsService = new ItemsService('app_customer', ctx);
 
