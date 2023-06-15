@@ -5,6 +5,6 @@ import {
 } from '@directus/types';
 
 export type ExtensionContext = ApiExtensionContext & {
-  accountability: Accountability;
+  accountability?: Accountability;
   schema: SchemaOverview;
 };
