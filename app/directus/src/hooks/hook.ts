@@ -1,27 +1,37 @@
 import { defineHook } from '@directus/extensions-sdk';
 
-import { mutateHarvestClients } from './harvest/mutate-harvest-client';
 import { ExtensionContext } from '../types/extension-context';
+import { mutateHarvestClients } from './harvest/mutate-harvest-client';
+import { mutateHarvestContact } from './harvest/mutate-harvest-contact';
 
 export default defineHook(async (hooks, hookCtx) => {
-  const ctx: ExtensionContext = {
-    ...hookCtx,
-    schema: await hookCtx.getSchema(),
-  };
-
   const { action, filter } = hooks;
+  const schema = await hookCtx.getSchema();
+  const ctx: ExtensionContext = { ...hookCtx, schema };
 
-  action('app_customer.items.create', (meta) => {
-    mutateHarvestClients(ctx, [meta.key], 'upsert');
-  });
+  function registerMutateFunction(
+    collection: string,
+    fn: (
+      ctx: ExtensionContext,
+      keys: string[],
+      action: 'delete' | 'upsert',
+    ) => Promise<void>,
+  ) {
+    action(`${collection}.items.create`, (meta) => {
+      fn(ctx, [meta.key], 'upsert');
+    });
 
-  action('app_customer.items.update', (meta) => {
-    mutateHarvestClients(ctx, meta.keys, 'upsert');
-  });
+    action(`${collection}.items.update`, (meta) => {
+      fn(ctx, meta.keys, 'upsert');
+    });
 
-  filter('app_customer.items.delete', async (keys: any) => {
-    await mutateHarvestClients(ctx, keys, 'delete');
-  });
+    filter(`${collection}.items.delete`, async (keys: any) => {
+      await fn(ctx, keys, 'delete');
+    });
+  }
+
+  registerMutateFunction('app_customer', mutateHarvestClients);
+  registerMutateFunction('app_contact', mutateHarvestContact);
 
   filter('users.create', async (input: any) => {
     const email = process.env.ADMIN_EMAIL;

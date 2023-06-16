@@ -53,7 +53,7 @@ async function updateHarvestClient(customer: Customer) {
 }
 
 function parseClient(customer: Customer) {
-  const client: Omit<HarvestClient, 'harvest_id'> = {
+  const client: HarvestClient = {
     name: customer.name,
     is_active: true,
     address: `${customer.street}\n${customer.postalCode} ${customer.city}`,
