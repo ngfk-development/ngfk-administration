@@ -3,6 +3,7 @@ export interface Contact {
   idHarvest?: string;
   idMoneybird?: string;
 
+  title?: string;
   firstName: string;
   lastName: string;
   phone?: string;

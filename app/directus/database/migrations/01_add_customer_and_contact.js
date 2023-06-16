@@ -26,6 +26,7 @@ export function up(knex) {
       table.string('last_name').notNullable();
       table.string('phone');
       table.string('email');
+      table.string('title');
 
       table.uuid('customer');
       table

@@ -37,6 +37,7 @@ export async function loadMoneybirdContactPerson(
 
       firstName: entity.firstname,
       lastName: entity.lastname,
+      title: entity.department,
       phone: entity.phone,
       email: entity.email,
       customer: customer.id,
