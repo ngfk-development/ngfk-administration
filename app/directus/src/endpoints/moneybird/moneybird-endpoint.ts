@@ -27,6 +27,7 @@ export async function moneybirdEndpoint(
 
     res.status(200).end();
   } catch (e) {
+    console.log(JSON.stringify(e));
     res.status(500).end();
   }
 }
