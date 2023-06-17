@@ -1,6 +1,6 @@
 import { defineHook } from '@directus/extensions-sdk';
 
-import { ExtensionContext } from '../types/extension-context';
+import { ExtensionContext } from '../types/directus/extension-context';
 import { mutateHarvestClients } from './harvest/mutate-harvest-client';
 import { mutateHarvestContact } from './harvest/mutate-harvest-contact';
 

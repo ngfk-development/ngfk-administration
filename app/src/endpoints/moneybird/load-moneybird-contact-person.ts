@@ -1,16 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
-import {
-  Contact,
-  Customer,
-  MoneybirdContact,
-  MoneybirdContactPerson,
-} from '@app/types';
 import { ItemsService } from '@directus/api';
 
 import { moneybird } from '../../clients/moneybird';
-import { ExtensionContext } from '../../types/extension-context';
-import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
+import { Contact } from '../../types/directus/contact';
+import { Customer } from '../../types/directus/customer';
+import { ExtensionContext } from '../../types/directus/extension-context';
+import { MoneybirdContactPerson } from '../../types/moneybird/moneybird-contact-person';
+import { MoneybirdContact } from '../../types/moneybird/moneybird-contact';
 
 export async function loadMoneybirdContactPerson(
   ctx: ExtensionContext,
@@ -22,7 +19,7 @@ export async function loadMoneybirdContactPerson(
   if (!customer) return;
 
   const { ItemsService } = ctx.services;
-  const service: ItemsService = new ItemsService('app_contact', ctx);
+  const service: ItemsService<Contact> = new ItemsService('app_contact', ctx);
 
   const [existing] = await service.readByQuery({
     filter: { id_moneybird: { _eq: entity.contact_id } },
@@ -31,32 +28,29 @@ export async function loadMoneybirdContactPerson(
 
   if (action === 'delete') await service.deleteOne(existing.id);
   else if (action === 'upsert') {
-    const contact: Partial<Contact> = {
+    await service.upsertOne({
       id: existing?.id ?? randomUUID(),
-      idMoneybird: entity.contact_id,
+      id_moneybird: entity.contact_id,
 
-      firstName: entity.firstname,
-      lastName: entity.lastname,
+      first_name: entity.firstname,
+      last_name: entity.lastname,
       title: entity.department,
       phone: entity.phone,
       email: entity.email,
       customer: customer.id,
-    };
-
-    await service.upsertOne(camelToSnakeCase(contact));
+    });
   }
 }
 
 async function findCustomer(ctx: ExtensionContext, id: string) {
   const { ItemsService } = ctx.services;
-  const service: ItemsService = new ItemsService('app_customer', ctx);
+  const service: ItemsService<Customer> = new ItemsService('app_customer', ctx);
 
   const moneybirdContact = await fetchMoneybirdContact(id);
   const directusField = moneybird.directusField(moneybirdContact);
   if (!directusField) return undefined;
 
-  const item = await service.readOne(directusField.value);
-  return snakeToCamelCase(item) as Customer;
+  return service.readOne(directusField.value);
 }
 
 async function fetchMoneybirdContact(id: string) {

@@ -1,11 +1,11 @@
 export interface Contact {
   id: string;
-  idHarvest?: string;
-  idMoneybird?: string;
+  id_harvest?: string;
+  id_moneybird?: string;
 
   title?: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   phone?: string;
   email?: string;
   customer?: string;
