@@ -1,8 +1,10 @@
-import { Contact, Customer, HarvestContact } from '@app/types';
 import type { ItemsService } from '@directus/api';
 
 import { harvest } from '../../clients/harvest';
-import { ExtensionContext } from '../../types/extension-context';
+import { Contact } from '../../types/directus/contact';
+import { Customer } from '../../types/directus/customer';
+import { ExtensionContext } from '../../types/directus/extension-context';
+import { HarvestContact } from '../../types/harvest/harvest-contact';
 import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 
 export async function mutateHarvestContact(

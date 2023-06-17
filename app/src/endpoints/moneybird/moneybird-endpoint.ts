@@ -1,10 +1,10 @@
-import { MoneybirdWebhookPayload } from '@app/types';
 import { ApiExtensionContext } from '@directus/types';
 import { Request, Response } from 'express';
 
-import { ExtensionContext } from '../../types/extension-context';
-import { loadMoneybirdContact } from './load-moneybird-contact';
+import { ExtensionContext } from '../../types/directus/extension-context';
+import { MoneybirdWebhookPayload } from '../../types/moneybird/moneybird-webhook-payload';
 import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
+import { loadMoneybirdContact } from './load-moneybird-contact';
 
 export async function moneybirdEndpoint(
   { accountability, body, schema }: Request,

@@ -1,5 +1,6 @@
-import { MoneybirdCustomField } from '@app/types';
 import axios from 'axios';
+
+import { MoneybirdCustomField } from '../types/moneybird/moneybird-custom-field';
 
 const client = axios.create({
   baseURL: process.env.MONEYBIRD_ENDPOINT,

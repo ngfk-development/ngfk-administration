@@ -1,15 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
-import {
-  Contact,
-  Customer,
-  MoneybirdContact,
-  MoneybirdContactPerson,
-} from '@app/types';
 import { ItemsService } from '@directus/api';
 
 import { moneybird } from '../../clients/moneybird';
-import { ExtensionContext } from '../../types/extension-context';
+import { Contact } from '../../types/directus/contact';
+import { Customer } from '../../types/directus/customer';
+import { ExtensionContext } from '../../types/directus/extension-context';
+import { MoneybirdContactPerson } from '../../types/moneybird/moneybird-contact-person';
+import { MoneybirdContact } from '../../types/moneybird/moneybird-contact';
 import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 
 export async function loadMoneybirdContactPerson(

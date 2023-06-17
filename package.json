@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "NGFK Development",
   "workspaces": [
-    "app/*"
+    "app"
   ],
   "scripts": {
     "build": "yarn clean && yarn workspaces foreach -tv run build",

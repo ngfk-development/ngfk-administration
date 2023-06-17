@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
-import { Customer, MoneybirdContact } from '@app/types';
 import { ItemsService } from '@directus/api';
 
 import { moneybird } from '../../clients/moneybird';
-import { ExtensionContext } from '../../types/extension-context';
+import { Customer } from '../../types/directus/customer';
+import { ExtensionContext } from '../../types/directus/extension-context';
+import { MoneybirdContact } from '../../types/moneybird/moneybird-contact';
 import { camelToSnakeCase } from '../../utils/change-casing';
 import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
