@@ -4,12 +4,10 @@ import { ExtensionContext } from '../types/extension-context';
 import { mutateHarvestClients } from './harvest/mutate-harvest-client';
 import { mutateHarvestContact } from './harvest/mutate-harvest-contact';
 
-export default defineHook(async (hooks, hookCtx) => {
+export default defineHook((hooks, hookCtx) => {
   const { action, filter } = hooks;
-  const schema = await hookCtx.getSchema();
-  const ctx: ExtensionContext = { ...hookCtx, schema };
 
-  function registerMutateFunction(
+  async function registerMutateFunction(
     collection: string,
     fn: (
       ctx: ExtensionContext,
@@ -17,15 +15,16 @@ export default defineHook(async (hooks, hookCtx) => {
       action: 'delete' | 'upsert',
     ) => Promise<void>,
   ) {
-    action(`${collection}.items.create`, (meta) => {
+    action(`${collection}.items.create`, (meta, eventCtx) => {
+      const ctx: ExtensionContext = { ...hookCtx, ...eventCtx };
       fn(ctx, [meta.key], 'upsert');
     });
-
-    action(`${collection}.items.update`, (meta) => {
+    action(`${collection}.items.update`, (meta, eventCtx) => {
+      const ctx: ExtensionContext = { ...hookCtx, ...eventCtx };
       fn(ctx, meta.keys, 'upsert');
     });
-
-    filter(`${collection}.items.delete`, async (keys: any) => {
+    filter(`${collection}.items.delete`, async (keys: any, {}, eventCtx) => {
+      const ctx: ExtensionContext = { ...hookCtx, ...eventCtx };
       await fn(ctx, keys, 'delete');
     });
   }
