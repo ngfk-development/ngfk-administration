@@ -88,3 +88,17 @@ module "secret_directus_admin_api_key" {
   secret_data = local.env["DIRECTUS_ADMIN_API_KEY"]
   region      = local.region
 }
+
+module "secret_moneybird_token" {
+  source      = "./secret"
+  secret_id   = "MONEYBIRD_TOKEN"
+  secret_data = local.env["MONEYBIRD_TOKEN"]
+  region      = local.region
+}
+
+module "secret_harvest_token" {
+  source      = "./secret"
+  secret_id   = "HARVEST_TOKEN"
+  secret_data = local.env["HARVEST_TOKEN"]
+  region      = local.region
+}

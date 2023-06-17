@@ -175,6 +175,51 @@ resource "google_cloud_run_v2_service" "directus" {
         value = var.storage_bucket
       }
 
+      env {
+        name  = "MONEYBIRD_ENDPOINT"
+        value = var.moneybird_endpoint
+      }
+
+      env {
+        name = "MONEYBIRD_TOKEN"
+        value_source {
+          secret_key_ref {
+            secret  = "MONEYBIRD_TOKEN"
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name  = "MONEYBIRD_FIELD_DIRECTUS"
+        value = var.moneybird_field_directus
+      }
+
+      env {
+        name  = "MONEYBIRD_FIELD_HARVEST"
+        value = var.moneybird_field_harvest
+      }
+
+      env {
+        name  = "HARVEST_ENDPOINT"
+        value = var.harvest_endpoint
+      }
+
+      env {
+        name  = "HARVEST_ACCOUNT_ID"
+        value = var.harvest_account_id
+      }
+
+      env {
+        name = "HARVEST_TOKEN"
+        value_source {
+          secret_key_ref {
+            secret  = "HARVEST_TOKEN"
+            version = "latest"
+          }
+        }
+      }
+
       volume_mounts {
         name       = "cloudsql"
         mount_path = "/cloudsql"
@@ -247,6 +292,18 @@ resource "google_secret_manager_secret_iam_member" "directus_key" {
 
 resource "google_secret_manager_secret_iam_member" "directus_secret" {
   secret_id = "DIRECTUS_SECRET"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret_iam_member" "moneybird_token" {
+  secret_id = "MONEYBIRD_TOKEN"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret_iam_member" "harvest_token" {
+  secret_id = "HARVEST_TOKEN"
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
 }

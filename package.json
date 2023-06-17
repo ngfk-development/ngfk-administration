@@ -13,7 +13,8 @@
     "clean": "yarn workspaces foreach -p run clean",
     "dev": "yarn workspaces foreach -pvi run dev",
     "format": "prettier --write . && yarn workspaces foreach -p exec sort-package-json",
-    "format:check": "prettier --check . && yarn workspaces foreach -p exec sort-package-json --check"
+    "format:check": "prettier --check . && yarn workspaces foreach -p exec sort-package-json --check",
+    "snapshot": "docker compose run --rm directus node /directus/cli.js schema snapshot /directus/snapshot.yml"
   },
   "prettier": "@ngfk/config-prettier",
   "devDependencies": {

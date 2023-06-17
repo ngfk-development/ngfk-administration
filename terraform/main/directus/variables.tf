@@ -41,3 +41,23 @@ variable "location" {
 variable "storage_bucket" {
   type = string
 }
+
+variable "moneybird_endpoint" {
+  type = string
+}
+
+variable "moneybird_field_directus" {
+  type = string
+}
+
+variable "moneybird_field_harvest" {
+  type = string
+}
+
+variable "harvest_endpoint" {
+  type = string
+}
+
+variable "harvest_account_id" {
+  type = string
+}

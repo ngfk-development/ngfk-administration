@@ -71,4 +71,11 @@ module "directus" {
   database_port       = "5432"
 
   storage_bucket = "${local.project_id}-directus"
+
+  moneybird_endpoint       = local.env["MONEYBIRD_ENDPOINT"]
+  moneybird_field_directus = local.env["MONEYBIRD_FIELD_DIRECTUS"]
+  moneybird_field_harvest  = local.env["MONEYBIRD_FIELD_HARVEST"]
+
+  harvest_endpoint   = local.env["HARVEST_ENDPOINT"]
+  harvest_account_id = local.env["HARVEST_ACCOUNT_ID"]
 }

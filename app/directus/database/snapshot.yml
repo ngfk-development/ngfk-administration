@@ -1,5 +1,5 @@
 version: 1
-directus: 10.2.0
+directus: 11.1.0
 vendor: postgres
 collections:
   - collection: app_contact
@@ -21,8 +21,9 @@ collections:
         - last_name
         - phone
       note: null
+      preview_url: null
       singleton: false
-      sort: null
+      sort: 2
       sort_field: null
       translations:
         - language: en-US
@@ -58,8 +59,9 @@ collections:
         - url
         - vat_number
       note: null
+      preview_url: null
       singleton: false
-      sort: null
+      sort: 1
       sort_field: null
       translations:
         - language: en-US
@@ -92,7 +94,7 @@ fields:
         template: '{{name}}'
       readonly: false
       required: false
-      sort: 7
+      sort: 9
       special: null
       translations:
         - language: en-US
@@ -135,7 +137,7 @@ fields:
         iconLeft: alternate_email
       readonly: false
       required: false
-      sort: 5
+      sort: 6
       special: null
       translations:
         - language: en-US
@@ -178,7 +180,7 @@ fields:
         trim: true
       readonly: false
       required: true
-      sort: 3
+      sort: 4
       special: null
       translations:
         - language: en-US
@@ -266,9 +268,49 @@ fields:
           translation: Harvest ID
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
       name: id_harvest
+      table: app_contact
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_contact
+    field: id_moneybird
+    type: string
+    meta:
+      collection: app_contact
+      conditions: null
+      display: null
+      display_options: null
+      field: id_moneybird
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special: null
+      translations:
+        - language: en-US
+          translation: Moneybird ID
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: id_moneybird
       table: app_contact
       data_type: character varying
       default_value: null
@@ -300,7 +342,7 @@ fields:
         trim: true
       readonly: false
       required: true
-      sort: 4
+      sort: 5
       special: null
       translations:
         - language: en-US
@@ -344,7 +386,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 6
+      sort: 7
       special: null
       translations:
         - language: en-US
@@ -356,6 +398,50 @@ fields:
       width: full
     schema:
       name: phone
+      table: app_contact
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_contact
+    field: title
+    type: string
+    meta:
+      collection: app_contact
+      conditions: null
+      display: raw
+      display_options: null
+      field: title
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        iconLeft: null
+        trim: true
+      readonly: false
+      required: false
+      sort: 8
+      special: null
+      translations:
+        - language: en-US
+          translation: Title
+        - language: nl-NL
+          translation: Titel
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: title
       table: app_contact
       data_type: character varying
       default_value: null
@@ -387,7 +473,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 6
+      sort: 7
       special: null
       translations:
         - language: en-US
@@ -431,7 +517,7 @@ fields:
         template: '{{first_name}} {{last_name}}'
       readonly: false
       required: false
-      sort: 11
+      sort: 10
       special:
         - o2m
       translations:
@@ -664,7 +750,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 7
+      sort: 6
       special: null
       translations:
         - language: en-US
@@ -718,49 +804,6 @@ fields:
       width: full
     schema:
       name: street
-      table: app_customer
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: app_customer
-    field: url
-    type: string
-    meta:
-      collection: app_customer
-      conditions: null
-      display: raw
-      display_options: null
-      field: url
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options:
-        trim: true
-      readonly: false
-      required: false
-      sort: 10
-      special: null
-      translations:
-        - language: en-US
-          translation: URL
-        - language: nl-NL
-          translation: URL
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: url
       table: app_customer
       data_type: character varying
       default_value: null
