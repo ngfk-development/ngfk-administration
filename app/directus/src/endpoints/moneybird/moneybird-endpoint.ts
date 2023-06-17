@@ -16,9 +16,6 @@ export async function moneybirdEndpoint(
     const payload: MoneybirdWebhookPayload = body;
     const action = payload.action.endsWith('_destroyed') ? 'delete' : 'upsert';
 
-    console.log(action);
-    console.log(JSON.stringify(payload));
-
     switch (payload.entity_type) {
       case 'Contact':
         await loadMoneybirdContact(ctx, payload.entity, action);

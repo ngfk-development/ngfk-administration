@@ -79,7 +79,7 @@ function parseContact(customer: Customer | null, contact: Contact) {
     first_name: contact.firstName,
     last_name: contact.lastName,
     phone_mobile: contact.phone ?? '',
-    title: '',
+    title: contact.title,
   };
 
   return harvestContact;
