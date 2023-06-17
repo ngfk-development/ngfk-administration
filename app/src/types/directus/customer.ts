@@ -1,12 +1,12 @@
 export interface Customer {
   id: string;
-  idHarvest?: string;
-  idMoneybird?: string;
+  id_harvest?: string;
+  id_moneybird?: string;
 
   name: string;
   street: string;
-  postalCode: string;
+  postal_code: string;
   city: string;
-  kvkNumber: string;
-  vatNumber: string;
+  kvk_number: string;
+  vat_number: string;
 }

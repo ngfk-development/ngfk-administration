@@ -4,7 +4,6 @@ import { harvest } from '../../clients/harvest';
 import { Customer } from '../../types/directus/customer';
 import { ExtensionContext } from '../../types/directus/extension-context';
 import { HarvestClient } from '../../types/harvest/harvest-client';
-import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 
 export async function mutateHarvestClients(
   ctx: ExtensionContext,
@@ -12,26 +11,28 @@ export async function mutateHarvestClients(
   action: 'delete' | 'upsert',
 ) {
   const { ItemsService } = ctx.services;
-  const service: ItemsService = new ItemsService('app_customer', ctx);
+  const service: ItemsService<Customer> = new ItemsService('app_customer', ctx);
 
-  const items = await service.readMany(keys);
-  const customers = items.map((item) => snakeToCamelCase(item) as Customer);
+  const customers = await service.readMany(keys);
 
   for (const customer of customers) {
     if (action === 'delete') await deleteHarvestClient(customer);
     else if (action === 'upsert') {
-      if (!customer.idHarvest) await createHarvestClient(service, customer);
+      if (!customer.id_harvest) await createHarvestClient(service, customer);
       else await updateHarvestClient(customer);
     }
   }
 }
 
 async function deleteHarvestClient(customer: Customer) {
-  if (customer.idHarvest)
-    await harvest.delete(`/clients/${customer.idHarvest}`);
+  if (customer.id_harvest)
+    await harvest.delete(`/clients/${customer.id_harvest}`);
 }
 
-async function createHarvestClient(service: ItemsService, customer: Customer) {
+async function createHarvestClient(
+  service: ItemsService<Customer>,
+  customer: Customer,
+) {
   const res = await harvest.post(
     '/clients',
     {},
@@ -39,15 +40,12 @@ async function createHarvestClient(service: ItemsService, customer: Customer) {
   );
 
   const { id } = res.data as { id: number };
-  await service.updateOne(
-    customer.id,
-    camelToSnakeCase({ idHarvest: id.toString() }),
-  );
+  await service.updateOne(customer.id, { id_harvest: id.toString() });
 }
 
 async function updateHarvestClient(customer: Customer) {
   await harvest.patch(
-    `/clients/${customer.idHarvest}`,
+    `/clients/${customer.id_harvest}`,
     {},
     { params: parseClient(customer) },
   );
@@ -57,7 +55,7 @@ function parseClient(customer: Customer) {
   const client: HarvestClient = {
     name: customer.name,
     is_active: true,
-    address: `${customer.street}\n${customer.postalCode} ${customer.city}`,
+    address: `${customer.street}\n${customer.postal_code} ${customer.city}`,
     currency: 'EUR',
   };
 

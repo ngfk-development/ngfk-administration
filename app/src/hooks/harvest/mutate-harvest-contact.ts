@@ -5,7 +5,6 @@ import { Contact } from '../../types/directus/contact';
 import { Customer } from '../../types/directus/customer';
 import { ExtensionContext } from '../../types/directus/extension-context';
 import { HarvestContact } from '../../types/harvest/harvest-contact';
-import { camelToSnakeCase, snakeToCamelCase } from '../../utils/change-casing';
 
 export async function mutateHarvestContact(
   ctx: ExtensionContext,
@@ -13,16 +12,15 @@ export async function mutateHarvestContact(
   action: 'delete' | 'upsert',
 ) {
   const { ItemsService } = ctx.services;
-  const service: ItemsService = new ItemsService('app_contact', ctx);
+  const service: ItemsService<Contact> = new ItemsService('app_contact', ctx);
 
-  const items = await service.readMany(keys);
-  const contacts = items.map((item) => snakeToCamelCase(item) as Contact);
+  const contacts = await service.readMany(keys);
   const customers = await fetchCustomers(ctx, contacts);
 
   for (const contact of contacts) {
     if (action === 'delete') await deleteHarvestContact(contact);
     else if (action === 'upsert') {
-      if (!contact.idHarvest) {
+      if (!contact.id_harvest) {
         const customer = customers.find((c) => c.id === contact.customer);
         if (customer) await createHarvestContact(service, customer, contact);
       } else await updateHarvestContact(contact);
@@ -31,11 +29,12 @@ export async function mutateHarvestContact(
 }
 
 async function deleteHarvestContact(contact: Contact) {
-  if (contact.idHarvest) await harvest.delete(`/contacts/${contact.idHarvest}`);
+  if (contact.id_harvest)
+    await harvest.delete(`/contacts/${contact.id_harvest}`);
 }
 
 async function createHarvestContact(
-  service: ItemsService,
+  service: ItemsService<Contact>,
   customer: Customer,
   contact: Contact,
 ) {
@@ -46,40 +45,36 @@ async function createHarvestContact(
   );
 
   const { id } = res.data as { id: number };
-  await service.updateOne(
-    contact.id,
-    camelToSnakeCase({ idHarvest: id.toString() }),
-  );
+  await service.updateOne(contact.id, { id_harvest: id.toString() });
 }
 
 async function updateHarvestContact(contact: Contact) {
   await harvest.patch(
-    `/contacts/${contact.idHarvest}`,
+    `/contacts/${contact.id_harvest}`,
     {},
     { params: parseContact(null, contact) },
   );
 }
 
-async function fetchCustomers(ctx: ExtensionContext, contacts: Contact[]) {
+function fetchCustomers(ctx: ExtensionContext, contacts: Contact[]) {
   const keys = contacts
-    .filter((contact) => !contact.idHarvest)
+    .filter((contact) => !contact.id_harvest)
     .map((contact) => contact.customer!)
     .filter(Boolean);
   if (!keys.length) return [];
 
   const { ItemsService } = ctx.services;
-  const service: ItemsService = new ItemsService('app_customer', ctx);
+  const service: ItemsService<Customer> = new ItemsService('app_customer', ctx);
 
-  const items = await service.readMany(keys);
-  return items.map((item) => snakeToCamelCase(item) as Customer);
+  return service.readMany(keys);
 }
 
 function parseContact(customer: Customer | null, contact: Contact) {
   const harvestContact: Partial<HarvestContact> = {
-    ...(customer?.idHarvest ? { client_id: +customer.idHarvest } : {}),
+    ...(customer?.id_harvest ? { client_id: +customer.id_harvest } : {}),
     email: contact.email ?? '',
-    first_name: contact.firstName,
-    last_name: contact.lastName,
+    first_name: contact.first_name,
+    last_name: contact.last_name,
     phone_mobile: contact.phone ?? '',
     title: contact.title,
   };

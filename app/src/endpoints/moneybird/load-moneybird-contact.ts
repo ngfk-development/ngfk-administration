@@ -6,7 +6,6 @@ import { moneybird } from '../../clients/moneybird';
 import { Customer } from '../../types/directus/customer';
 import { ExtensionContext } from '../../types/directus/extension-context';
 import { MoneybirdContact } from '../../types/moneybird/moneybird-contact';
-import { camelToSnakeCase } from '../../utils/change-casing';
 import { loadMoneybirdContactPerson } from './load-moneybird-contact-person';
 
 export async function loadMoneybirdContact(
@@ -15,7 +14,7 @@ export async function loadMoneybirdContact(
   action: 'delete' | 'upsert',
 ) {
   const { ItemsService } = ctx.services;
-  const service: ItemsService = new ItemsService('app_customer', ctx);
+  const service: ItemsService<Customer> = new ItemsService('app_customer', ctx);
 
   const directusField = moneybird.directusField(entity);
   const harvestField = moneybird.harvestField(entity);
@@ -35,18 +34,18 @@ export async function loadMoneybirdContact(
   else if (action === 'upsert') {
     const customer: Customer = {
       id,
-      idHarvest: harvestField?.value ?? undefined,
-      idMoneybird: entity.id,
+      id_harvest: harvestField?.value ?? undefined,
+      id_moneybird: entity.id,
 
       name: entity.company_name,
       street: entity.address1,
-      postalCode: entity.zipcode,
+      postal_code: entity.zipcode,
       city: entity.city,
-      kvkNumber: entity.chamber_of_commerce,
-      vatNumber: entity.tax_number,
+      kvk_number: entity.chamber_of_commerce,
+      vat_number: entity.tax_number,
     };
 
-    await service.upsertOne(camelToSnakeCase(customer));
+    await service.upsertOne(customer);
 
     for (const contactPerson of entity.contact_people)
       await loadMoneybirdContactPerson(ctx, contactPerson, action, customer);
