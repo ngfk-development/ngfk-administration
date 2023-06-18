@@ -32,7 +32,7 @@ export async function loadJiraProject(
       ...(customer ? { customer: customer.id } : {}),
       id: existing?.id ?? randomUUID(),
       id_jira: entity.id.toString(),
-      name: entity.name,
+      name: projectName.trim(),
       key: entity.key,
     });
   }
