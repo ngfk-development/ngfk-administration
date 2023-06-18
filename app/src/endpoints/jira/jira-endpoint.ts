@@ -7,7 +7,7 @@ export async function jiraEndpoint(
   _apiCtx: ApiExtensionContext,
 ) {
   try {
-    console.log(req.body);
+    console.log(JSON.stringify(req.body));
 
     res.status(200).end();
   } catch (e) {
