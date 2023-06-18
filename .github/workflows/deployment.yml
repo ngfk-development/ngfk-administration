@@ -48,17 +48,17 @@ jobs:
       - name: Terraform Validate
         working-directory: terraform/registry
         run: terraform validate -no-color
-      - name: Terraform Plan
-        if: github.event_name == 'pull_request'
-        working-directory: terraform/registry
-        run: >-
-          terraform plan
-          -no-color
-          -input=false
-          -var="project_id=$GCP_PROJECT"
-          -var="region=$GCP_REGION"
+      # - name: Terraform Plan
+      #   if: github.event_name == 'pull_request'
+      #   working-directory: terraform/registry
+      #   run: >-
+      #     terraform plan
+      #     -no-color
+      #     -input=false
+      #     -var="project_id=$GCP_PROJECT"
+      #     -var="region=$GCP_REGION"
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: terraform/registry
         run: >-
           terraform apply
@@ -94,7 +94,7 @@ jobs:
       - name: Tag docker image
         run: docker tag $DOCKER_DIRECTUS $GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS
       - name: Push docker image
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: docker push $GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS
 
   terraform_main:
@@ -135,18 +135,18 @@ jobs:
       - name: Terraform Validate
         working-directory: terraform/main
         run: terraform validate -no-color
-      - name: Terraform Plan
-        if: github.event_name == 'pull_request'
-        working-directory: terraform/main
-        run: >-
-          terraform plan
-          -no-color
-          -input=false
-          -var="project_id=$GCP_PROJECT"
-          -var="region=$GCP_REGION"
-          -var="docker_directus=$GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS"
+      # - name: Terraform Plan
+      #   if: github.event_name == 'pull_request'
+      #   working-directory: terraform/main
+      #   run: >-
+      #     terraform plan
+      #     -no-color
+      #     -input=false
+      #     -var="project_id=$GCP_PROJECT"
+      #     -var="region=$GCP_REGION"
+      #     -var="docker_directus=$GCP_REGION-docker.pkg.dev/$GCP_PROJECT/docker/$DOCKER_DIRECTUS"
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: terraform/main
         run: >-
           terraform apply
