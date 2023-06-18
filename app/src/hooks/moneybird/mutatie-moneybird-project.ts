@@ -42,6 +42,6 @@ async function createMoneybirdProject(
 
 async function updateMoneybirdProject(project: Project) {
   await moneybird.patch(`/projects/${project.id_moneybird}`, {
-    project: { name: project.name },
+    project: { name: `${project.key} ${project.name}` },
   });
 }
