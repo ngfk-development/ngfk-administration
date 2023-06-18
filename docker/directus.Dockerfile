@@ -10,11 +10,13 @@ RUN yarn build
 
 FROM directus/directus:10.3
 
-COPY --from=build /app/app/dist                  /directus/extensions/directus-extension-ngfk-administration/dist
-COPY --from=build /app/app/package.json          /directus/extensions/directus-extension-ngfk-administration/package.json
-COPY --from=build /app/app/database/snapshot.yml /directus/snapshot.yml
+COPY --from=build /app/app/dist                         /directus/extensions/directus-extension-ngfk-administration/dist
+COPY --from=build /app/app/package.json                 /directus/extensions/directus-extension-ngfk-administration/package.json
+COPY --from=build /app/app/database/data_production.yml /directus/data.yml
+COPY --from=build /app/app/database/snapshot.yml        /directus/snapshot.yml
 
 CMD : \
   && node /directus/cli.js bootstrap \
   && node /directus/cli.js schema apply -y /directus/snapshot.yml \
+  && node /directus/cli.js data apply /directus/data.yml \
   && node /directus/cli.js start;

@@ -1,0 +1,52 @@
+directus_settings:
+  - id: 1
+    project_name: NGFK Development
+    project_url: https://admin.ngfk.dev
+    project_color: '#008793'
+    project_logo: null
+    public_foreground: null
+    public_background: null
+    public_note: null
+    auth_login_attempts: 25
+    auth_password_policy: null
+    storage_asset_transform: all
+    storage_asset_presets: null
+    custom_css: |
+      @media (prefers-color-scheme: dark) {
+          body.auto {
+            --primary-10: #142026 !important;
+            --primary-25: #113238 !important;
+            --primary-50: #0b4e57 !important;
+            --primary-75: #066b75 !important;
+            --primary-90: #027c87 !important;
+            --primary: #008793 !important;
+            --primary-110: #1a939e !important;
+            --primary-125: #40a5ae !important;
+            --primary-150: #80c3c9 !important;
+            --primary-175: #bfe1e4 !important;
+            --primary-190: #e6f3f4 !important;
+        }
+      }
+    storage_default_folder: null
+    basemaps: null
+    mapbox_key: null
+    module_bar:
+      - type: module
+        id: content
+        enabled: true
+      - type: module
+        id: users
+        enabled: false
+      - type: module
+        id: files
+        enabled: true
+      - type: module
+        id: insights
+        enabled: false
+      - type: module
+        id: settings
+        enabled: true
+        locked: true
+    project_descriptor: Administration
+    default_language: en-US
+    custom_aspect_ratios: null

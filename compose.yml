@@ -17,6 +17,7 @@ services:
       - |
         node /directus/cli.js bootstrap
         node /directus/cli.js schema apply -y /directus/snapshot.yml
+        node /directus/cli.js data apply /directus/data.yml
         node /directus/cli.js start
     depends_on:
       - database
@@ -50,6 +51,7 @@ services:
       - 8055:8055
     volumes:
       - ./app:/directus/extensions/directus-extension-ngfk-administration
+      - ./app/database/data_development.yml:/directus/data.yml
       - ./app/database/snapshot.yml:/directus/snapshot.yml
       - uploads:/directus/uploads
 
