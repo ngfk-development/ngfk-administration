@@ -14,7 +14,7 @@
     "dev": "yarn workspaces foreach -pvi run dev",
     "format": "prettier --write . && yarn workspaces foreach -p exec sort-package-json",
     "format:check": "prettier --check . && yarn workspaces foreach -p exec sort-package-json --check",
-    "snapshot:data": "docker compose run --rm directus node /directus/cli.js data snapshot /directus/data.yml directus_settings",
+    "snapshot:data": "docker compose run --rm directus node /directus/cli.js data snapshot /directus/data.yml directus_settings directus_translations",
     "snapshot:schema": "docker compose run --rm directus node /directus/cli.js schema snapshot /directus/snapshot.yml"
   },
   "prettier": "@ngfk/config-prettier",
