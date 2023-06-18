@@ -17,7 +17,7 @@ export async function mutateMoneybirdProject(
   for (const project of projects) {
     if (action === 'delete') await deleteMoneybirdProject(project);
     else if (action === 'upsert') {
-      if (!project.id_harvest) await createMoneybirdProject(service, project);
+      if (!project.id_moneybird) await createMoneybirdProject(service, project);
       else await updateMoneybirdProject(project);
     }
   }
