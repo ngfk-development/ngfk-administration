@@ -50,6 +50,23 @@ directus_settings:
     project_descriptor: Administration
     default_language: en-US
     custom_aspect_ratios: null
+directus_translations:
+  - id: 13c2ddc5-589d-4e56-adca-61f508ac52ff
+    language: nl-NL
+    key: task
+    value: Taak
+  - id: 90151c4a-7970-43f6-b449-1476ad814be5
+    language: en-US
+    key: task
+    value: Task
+  - id: 99ed2b13-9e09-4300-9128-95f15a0674f6
+    language: nl-NL
+    key: project
+    value: Project
+  - id: da69e6a8-fffd-4e64-8ab8-7c97f2e142a6
+    language: en-US
+    key: project
+    value: Project
 app_customer:
   - city: Almere
     id: 5f11c0be-5cad-422b-b64c-27b2670f1db7
