@@ -1011,7 +1011,7 @@ fields:
             value: task
       readonly: false
       required: false
-      sort: 4
+      sort: 5
       special: null
       translations:
         - language: en-US
@@ -1115,7 +1115,7 @@ fields:
         min: 0
       readonly: false
       required: true
-      sort: 5
+      sort: 6
       special: null
       translations:
         - language: en-US
@@ -1196,7 +1196,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 7
+      sort: 8
       special: null
       translations:
         - language: en-US
@@ -1238,7 +1238,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 8
+      sort: 9
       special: null
       translations:
         - language: en-US
@@ -1280,7 +1280,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 6
+      sort: 7
       special: null
       translations:
         - language: en-US
@@ -1292,6 +1292,49 @@ fields:
       width: half
     schema:
       name: id_moneybird
+      table: app_project
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: key
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: raw
+      display_options: null
+      field: key
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        trim: true
+      readonly: false
+      required: false
+      sort: 4
+      special: null
+      translations:
+        - language: en-US
+          translation: Key
+        - language: nl-NL
+          translation: Key
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: key
       table: app_project
       data_type: character varying
       default_value: null
