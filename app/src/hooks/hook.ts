@@ -4,6 +4,7 @@ import { ExtensionContext } from '../types/directus/extension-context';
 import { mutateHarvestClients } from './harvest/mutate-harvest-client';
 import { mutateHarvestContact } from './harvest/mutate-harvest-contact';
 import { commandData } from './command-data/command-data';
+import { mutateMoneybirdProject } from './moneybird/mutatie-moneybird-project';
 
 export default defineHook((hooks, hookCtx) => {
   const { action, filter, init } = hooks;
@@ -49,4 +50,5 @@ export default defineHook((hooks, hookCtx) => {
 
   registerMutateFunction('app_customer', mutateHarvestClients);
   registerMutateFunction('app_contact', mutateHarvestContact);
+  registerMutateFunction('app_project', mutateMoneybirdProject);
 });
