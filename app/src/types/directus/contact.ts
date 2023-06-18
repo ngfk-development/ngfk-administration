@@ -1,7 +1,7 @@
 export interface Contact {
   id: string;
-  id_harvest?: string;
   id_moneybird?: string;
+  id_harvest?: string;
 
   title?: string;
   first_name: string;

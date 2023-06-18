@@ -1,13 +1,27 @@
 import { ApiExtensionContext } from '@directus/types';
 import { Request, Response } from 'express';
 
+import { ExtensionContext } from '../../types/directus/extension-context';
+import { JiraWebhookPayload } from '../../types/jira/jira-webhook-payload';
+import { loadJiraEpic } from './load-jira-epic';
+import { loadJiraProject } from './load-jira-project';
+
 export async function jiraEndpoint(
-  req: Request,
+  { accountability, body, schema }: Request,
   res: Response,
-  _apiCtx: ApiExtensionContext,
+  apiCtx: ApiExtensionContext,
 ) {
   try {
-    console.log(JSON.stringify(req.body));
+    const ctx: ExtensionContext = { ...apiCtx, accountability, schema };
+    const payload: JiraWebhookPayload = body;
+    const action = payload.webhookEvent.endsWith('_deleted')
+      ? 'delete'
+      : 'upsert';
+
+    if (payload.webhookEvent.startsWith('project') && 'project' in payload)
+      await loadJiraProject(ctx, payload.project, action);
+    else if (payload.webhookEvent.startsWith('issue') && 'issue' in payload)
+      await loadJiraEpic(ctx, payload.issue, action);
 
     res.status(200).end();
   } catch (e) {
