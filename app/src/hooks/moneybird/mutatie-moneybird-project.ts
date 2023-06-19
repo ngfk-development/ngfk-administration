@@ -3,6 +3,7 @@ import { ItemsService } from '@directus/api';
 import { moneybird } from '../../clients/moneybird';
 import { ExtensionContext } from '../../types/directus/extension-context';
 import { Project } from '../../types/directus/project';
+import { Customer } from '../../types/directus/customer';
 
 export async function mutateMoneybirdProject(
   ctx: ExtensionContext,
@@ -17,8 +18,12 @@ export async function mutateMoneybirdProject(
   for (const project of projects) {
     if (action === 'delete') await deleteMoneybirdProject(project);
     else if (action === 'upsert') {
-      if (!project.id_moneybird) await createMoneybirdProject(service, project);
-      else await updateMoneybirdProject(project);
+      const customer = await findCustomer(ctx, project);
+      if (!customer) continue;
+
+      if (!project.id_moneybird)
+        await createMoneybirdProject(service, customer, project);
+      else await updateMoneybirdProject(customer, project);
     }
   }
 }
@@ -30,18 +35,25 @@ async function deleteMoneybirdProject(project: Project) {
 
 async function createMoneybirdProject(
   service: ItemsService<Project>,
+  customer: Customer,
   project: Project,
 ) {
   const res = await moneybird.post('/projects', {
-    project: { name: project.name },
+    project: { name: `${customer.name} - ${project.name}` },
   });
 
   const { id } = res.data as { id: string };
   await service.updateOne(project.id, { id_moneybird: id });
 }
 
-async function updateMoneybirdProject(project: Project) {
+async function updateMoneybirdProject(customer: Customer, project: Project) {
   await moneybird.patch(`/projects/${project.id_moneybird}`, {
-    project: { name: `${project.key} ${project.name}` },
+    project: { name: `${customer.name} - ${project.name}` },
   });
+}
+
+async function findCustomer(ctx: ExtensionContext, project: Project) {
+  const { ItemsService } = ctx.services;
+  const service: ItemsService<Customer> = new ItemsService('app_customer', ctx);
+  return project.customer ? service.readOne(project.customer) : null;
 }
