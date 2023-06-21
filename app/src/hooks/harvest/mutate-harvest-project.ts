@@ -72,7 +72,7 @@ function fetchCustomers(ctx: ExtensionContext, projects: Project[]) {
 function parseProject(customer: Customer, project: Project) {
   const harvestProject: Partial<HarvestProject> = {
     ...(customer?.id_harvest ? { client_id: +customer.id_harvest } : {}),
-    bill_by: project.billable ?? 'none',
+    bill_by: parseBillBy(project.billable),
     budget_by: 'none',
     hourly_rate: project.hour_rate,
     is_active: true,
@@ -81,4 +81,15 @@ function parseProject(customer: Customer, project: Project) {
   };
 
   return harvestProject;
+}
+
+function parseBillBy(billable: Project['billable']): HarvestProject['bill_by'] {
+  switch (billable) {
+    case 'project':
+      return 'Project';
+    case 'task':
+      return 'Task';
+    default:
+      return 'none';
+  }
 }
