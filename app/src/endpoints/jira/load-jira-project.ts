@@ -18,8 +18,9 @@ export async function loadJiraProject(
   const [customerName, projectName] = entity.name.split(' - ');
   if (!projectName) return;
 
+  const jiraId = entity.id.toString();
   const [existing] = await service.readByQuery({
-    filter: { name: { _eq: projectName }, key: { _eq: entity.key } },
+    filter: { id_jira: { _eq: jiraId } },
     limit: 1,
   });
 
@@ -31,7 +32,7 @@ export async function loadJiraProject(
     service.upsertOne({
       ...(customer ? { customer: customer.id } : {}),
       id: existing?.id ?? randomUUID(),
-      id_jira: entity.id.toString(),
+      id_jira: jiraId,
       name: projectName.trim(),
       key: entity.key,
     });
