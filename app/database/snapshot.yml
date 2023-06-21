@@ -1461,7 +1461,7 @@ fields:
       conditions: null
       display: related-values
       display_options:
-        template: ' {{customer}} - {{name}}'
+        template: '{{customer}}- {{name}}'
       field: project
       group: null
       hidden: false
@@ -1469,7 +1469,7 @@ fields:
       note: null
       options:
         enableCreate: false
-        template: '{{customer}} - {{name}}'
+        template: '{{customer}}- {{name}}'
       readonly: false
       required: false
       sort: 2
@@ -1613,6 +1613,7 @@ fields:
       interface: list-o2m
       note: null
       options:
+        enableCreate: false
         template: "{{key}}\_{{name}}"
       readonly: false
       required: false
