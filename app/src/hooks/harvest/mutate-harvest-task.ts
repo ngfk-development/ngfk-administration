@@ -20,12 +20,10 @@ export async function mutateHarvestTask(
   for (const epic of epics) {
     if (action === 'delete') await deleteHarvestTask(epic);
     else if (action === 'upsert') {
-      const project = projects.find((p) => p.id === epic.project);
-      if (!project) continue;
-
-      if (!epic.id_harvest || !epic.id_harvest_assignment)
-        await createHarvestTask(service, project, epic);
-      else await updateHarvestTask(project, epic);
+      if (!epic.id_harvest || !epic.id_harvest_assignment) {
+        const project = projects.find((p) => p.id === epic.project);
+        if (project) await createHarvestTask(service, project, epic);
+      } else await updateHarvestTask(epic);
     }
   }
 }
@@ -39,11 +37,7 @@ async function createHarvestTask(
   project: Project,
   epic: Epic,
 ) {
-  const res1 = await harvest.post(
-    '/tasks',
-    {},
-    { params: parseEpic(project, epic) },
-  );
+  const res1 = await harvest.post('/tasks', {}, { params: parseEpic(epic) });
   const { id: harvestId } = res1.data as { id: number };
 
   const res2 = await harvest.post(
@@ -59,16 +53,19 @@ async function createHarvestTask(
   });
 }
 
-async function updateHarvestTask(project: Project, epic: Epic) {
+async function updateHarvestTask(epic: Epic) {
   await harvest.patch(
     `/tasks/${epic.id_harvest}`,
     {},
-    { params: parseEpic(project, epic) },
+    { params: parseEpic(epic) },
   );
 }
 
 function fetchProjects(ctx: ExtensionContext, epics: Epic[]) {
-  const keys = epics.map((epic) => epic.project!).filter(Boolean);
+  const keys = epics
+    .filter((epic) => !epic.id_harvest)
+    .map((epic) => epic.project!)
+    .filter(Boolean);
   if (!keys.length) return [];
 
   const { ItemsService } = ctx.services;
@@ -77,9 +74,9 @@ function fetchProjects(ctx: ExtensionContext, epics: Epic[]) {
   return service.readMany(keys);
 }
 
-function parseEpic(project: Project, epic: Epic) {
+function parseEpic(epic: Epic) {
   const task: Partial<HarvestTask> = {
-    name: `${project.name} - ${epic.name}`,
+    name: `${epic.key} ${epic.name}`,
     billable_by_default: epic.billable,
     default_hourly_rate: new Intl.NumberFormat('nl-NL').format(epic.hour_rate),
     is_active: true,
