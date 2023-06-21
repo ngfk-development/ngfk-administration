@@ -28,7 +28,7 @@ export async function loadJiraEpic(
   } else if (action === 'upsert') {
     const project = await findProject(ctx, entity.fields.project.id);
 
-    service.upsertOne({
+    await service.upsertOne({
       id: existing?.id ?? randomUUID(),
       id_jira: jiraId,
 
