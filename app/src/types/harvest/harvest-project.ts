@@ -3,7 +3,7 @@ export interface HarvestProject {
   client_id: number | null;
   bill_by: 'Project' | 'Task' | 'none';
   budget_by: 'none';
-  hourly_rate: number;
+  hourly_rate: string;
   is_billable: boolean;
   is_active: boolean;
 }

@@ -74,7 +74,7 @@ function parseProject(customer: Customer, project: Project) {
     ...(customer?.id_harvest ? { client_id: +customer.id_harvest } : {}),
     bill_by: parseBillBy(project.billable),
     budget_by: 'none',
-    hourly_rate: project.hour_rate,
+    hourly_rate: new Intl.NumberFormat('nl-NL').format(project.hour_rate),
     is_active: true,
     is_billable: !!project.billable,
     name: project.name,
