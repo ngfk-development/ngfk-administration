@@ -12,7 +12,7 @@ collections:
       collection: app_contact
       color: null
       display_template: '{{first_name}} {{last_name}} <{{email}}>'
-      group: null
+      group: folder_crm
       hidden: false
       icon: null
       item_duplication_fields:
@@ -20,6 +20,7 @@ collections:
         - first_name
         - last_name
         - phone
+        - title
       note: null
       preview_url: null
       singleton: false
@@ -47,7 +48,7 @@ collections:
       collection: app_customer
       color: null
       display_template: '{{name}}'
-      group: null
+      group: folder_crm
       hidden: false
       icon: null
       item_duplication_fields:
@@ -75,6 +76,121 @@ collections:
       unarchive_value: null
     schema:
       name: app_customer
+  - collection: app_epic
+    meta:
+      accountability: all
+      archive_app_filter: false
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: app_epic
+      color: null
+      display_template: null
+      group: folder_projects
+      hidden: false
+      icon: null
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 2
+      sort_field: null
+      translations:
+        - language: en-US
+          translation: Epic
+          singular: Epic
+          plural: Epics
+        - language: nl-NL
+          translation: Epic
+          singular: Epic
+          plural: Epics
+      unarchive_value: null
+    schema:
+      name: app_epic
+  - collection: app_project
+    meta:
+      accountability: all
+      archive_app_filter: false
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: app_project
+      color: null
+      display_template: '{{name}}'
+      group: folder_projects
+      hidden: false
+      icon: null
+      item_duplication_fields:
+        - billable
+        - hour_rate
+        - name
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: null
+      translations:
+        - language: en-US
+          translation: Project
+          singular: Project
+          plural: Protjects
+        - language: nl-NL
+          translation: Project
+          singular: Project
+          plural: Projecten
+      unarchive_value: null
+    schema:
+      name: app_project
+  - collection: folder_crm
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: folder_crm
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: folder
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: null
+      translations:
+        - language: en-US
+          translation: Customer Relationship Management
+        - language: nl-NL
+          translation: Klantrelaties
+      unarchive_value: null
+  - collection: folder_projects
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: folder_projects
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: folder
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 2
+      sort_field: null
+      translations:
+        - language: en-US
+          translation: Projects
+        - language: nl-NL
+          translation: Projecten
+      unarchive_value: null
 fields:
   - collection: app_contact
     field: customer
@@ -94,7 +210,7 @@ fields:
         template: '{{name}}'
       readonly: false
       required: false
-      sort: 9
+      sort: 7
       special: null
       translations:
         - language: en-US
@@ -137,7 +253,7 @@ fields:
         iconLeft: alternate_email
       readonly: false
       required: false
-      sort: 6
+      sort: 4
       special: null
       translations:
         - language: en-US
@@ -180,7 +296,7 @@ fields:
         trim: true
       readonly: false
       required: true
-      sort: 4
+      sort: 2
       special: null
       translations:
         - language: en-US
@@ -261,10 +377,12 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 2
+      sort: 9
       special: null
       translations:
         - language: en-US
+          translation: Harvest ID
+        - language: nl-NL
           translation: Harvest ID
       validation: null
       validation_message: null
@@ -301,10 +419,12 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 3
+      sort: 8
       special: null
       translations:
         - language: en-US
+          translation: Moneybird ID
+        - language: nl-NL
           translation: Moneybird ID
       validation: null
       validation_message: null
@@ -342,7 +462,7 @@ fields:
         trim: true
       readonly: false
       required: true
-      sort: 5
+      sort: 3
       special: null
       translations:
         - language: en-US
@@ -386,7 +506,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 7
+      sort: 5
       special: null
       translations:
         - language: en-US
@@ -430,7 +550,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 8
+      sort: 6
       special: null
       translations:
         - language: en-US
@@ -473,7 +593,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 7
+      sort: 5
       special: null
       translations:
         - language: en-US
@@ -517,7 +637,7 @@ fields:
         template: '{{first_name}} {{last_name}}'
       readonly: false
       required: false
-      sort: 10
+      sort: 8
       special:
         - o2m
       translations:
@@ -583,10 +703,12 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 2
+      sort: 11
       special: null
       translations:
         - language: en-US
+          translation: Harvest ID
+        - language: nl-NL
           translation: Harvest ID
       validation: null
       validation_message: null
@@ -623,10 +745,12 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 3
+      sort: 10
       special: null
       translations:
         - language: en-US
+          translation: Moneybird ID
+        - language: nl-NL
           translation: Moneybird ID
       validation: null
       validation_message: null
@@ -664,7 +788,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 8
+      sort: 6
       special: null
       translations:
         - language: en-US
@@ -707,7 +831,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 4
+      sort: 2
       special: null
       translations:
         - language: en-US
@@ -750,7 +874,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 6
+      sort: 4
       special: null
       translations:
         - language: en-US
@@ -777,6 +901,36 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: app_customer
+    field: projects
+    type: alias
+    meta:
+      collection: app_customer
+      conditions: null
+      display: related-values
+      display_options:
+        template: '{{name}}'
+      field: projects
+      group: null
+      hidden: false
+      interface: list-o2m
+      note: null
+      options:
+        enableCreate: false
+        template: '{{name}}'
+      readonly: false
+      required: false
+      sort: 9
+      special:
+        - o2m
+      translations:
+        - language: en-US
+          translation: Projects
+        - language: nl-NL
+          translation: Projecten
+      validation: null
+      validation_message: null
+      width: full
+  - collection: app_customer
     field: street
     type: string
     meta:
@@ -792,7 +946,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 5
+      sort: 3
       special: null
       translations:
         - language: en-US
@@ -835,7 +989,7 @@ fields:
         trim: true
       readonly: false
       required: false
-      sort: 9
+      sort: 7
       special: null
       translations:
         - language: en-US
@@ -848,6 +1002,928 @@ fields:
     schema:
       name: vat_number
       table: app_customer
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: billable
+    type: boolean
+    meta:
+      collection: app_epic
+      conditions: null
+      display: boolean
+      display_options: null
+      field: billable
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 7
+      special:
+        - cast-boolean
+      translations:
+        - language: en-US
+          translation: Billable
+        - language: nl-NL
+          translation: Factureerbaar
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: billable
+      table: app_epic
+      data_type: boolean
+      default_value: true
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: date_end
+    type: date
+    meta:
+      collection: app_epic
+      conditions: null
+      display: datetime
+      display_options:
+        format: short
+      field: date_end
+      group: null
+      hidden: false
+      interface: datetime
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 6
+      special: null
+      translations:
+        - language: en-US
+          translation: End date
+        - language: nl-NL
+          translation: Einddatum
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_end
+      table: app_epic
+      data_type: date
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: date_start
+    type: date
+    meta:
+      collection: app_epic
+      conditions: null
+      display: datetime
+      display_options:
+        format: short
+      field: date_start
+      group: null
+      hidden: false
+      interface: datetime
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 5
+      special: null
+      translations:
+        - language: en-US
+          translation: Start date
+        - language: nl-NL
+          translation: Startdatum
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_start
+      table: app_epic
+      data_type: date
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: hour_rate
+    type: decimal
+    meta:
+      collection: app_epic
+      conditions:
+        - name: Only when billable
+          rule:
+            _and:
+              - billable:
+                  _eq: false
+          hidden: true
+          options:
+            font: sans-serif
+            trim: false
+            masked: false
+            clear: false
+            slug: false
+      display: formatted-value
+      display_options:
+        format: true
+        prefix: €
+      field: hour_rate
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        iconLeft: euro
+        min: 0
+      readonly: false
+      required: true
+      sort: 8
+      special: null
+      translations:
+        - language: en-US
+          translation: Hour rate
+        - language: nl-NL
+          translation: Uurtarief
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: hour_rate
+      table: app_epic
+      data_type: numeric
+      default_value: 0
+      max_length: null
+      numeric_precision: 8
+      numeric_scale: 2
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: id
+    type: uuid
+    meta:
+      collection: app_epic
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: app_epic
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: id_harvest
+    type: string
+    meta:
+      collection: app_epic
+      conditions: null
+      display: null
+      display_options: null
+      field: id_harvest
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 9
+      special: null
+      translations:
+        - language: en-US
+          translation: Harvest ID
+        - language: nl-NL
+          translation: Harvest ID
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: id_harvest
+      table: app_epic
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: id_harvest_assignment
+    type: string
+    meta:
+      collection: app_epic
+      conditions: null
+      display: null
+      display_options: null
+      field: id_harvest_assignment
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 10
+      special: null
+      translations:
+        - language: en-US
+          translation: Harvest assignment ID
+        - language: nl-NL
+          translation: Harvest assignment ID
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: id_harvest_assignment
+      table: app_epic
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: id_jira
+    type: string
+    meta:
+      collection: app_epic
+      conditions: null
+      display: null
+      display_options: null
+      field: id_jira
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 11
+      special: null
+      translations:
+        - language: en-US
+          translation: Jira ID
+        - language: nl-NL
+          translation: Jira ID
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id_jira
+      table: app_epic
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: key
+    type: string
+    meta:
+      collection: app_epic
+      conditions: null
+      display: raw
+      display_options: null
+      field: key
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        trim: true
+      readonly: false
+      required: false
+      sort: 3
+      special: null
+      translations:
+        - language: en-US
+          translation: Key
+        - language: nl-NL
+          translation: Key
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: key
+      table: app_epic
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: name
+    type: string
+    meta:
+      collection: app_epic
+      conditions: null
+      display: raw
+      display_options: null
+      field: name
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        trim: true
+      readonly: false
+      required: false
+      sort: 4
+      special: null
+      translations:
+        - language: en-US
+          translation: Name
+        - language: nl-NL
+          translation: Naam
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: name
+      table: app_epic
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_epic
+    field: project
+    type: uuid
+    meta:
+      collection: app_epic
+      conditions: null
+      display: related-values
+      display_options:
+        template: '{{customer}}- {{name}}'
+      field: project
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+        template: '{{customer}}- {{name}}'
+      readonly: false
+      required: false
+      sort: 2
+      special:
+        - m2o
+      translations:
+        - language: en-US
+          translation: Project
+        - language: nl-NL
+          translation: Project
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: project
+      table: app_epic
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: app_project
+      foreign_key_column: id
+  - collection: app_project
+    field: billable
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: labels
+      display_options:
+        choices:
+          - text: $t:project
+            value: project
+          - text: $t:task
+            value: task
+      field: billable
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        allowNone: true
+        choices:
+          - text: $t:project
+            value: project
+          - text: $t:task
+            value: task
+      readonly: false
+      required: false
+      sort: 5
+      special: null
+      translations:
+        - language: en-US
+          translation: Billable
+        - language: nl-NL
+          translation: Factureerbaar
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: billable
+      table: app_project
+      data_type: character varying
+      default_value: project
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: customer
+    type: uuid
+    meta:
+      collection: app_project
+      conditions: null
+      display: related-values
+      display_options:
+        template: '{{name}}'
+      field: customer
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+        template: '{{name}}'
+      readonly: false
+      required: false
+      sort: 2
+      special:
+        - m2o
+      translations:
+        - language: en-US
+          translation: Customer
+        - language: nl-NL
+          translation: Klant
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: customer
+      table: app_project
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: app_customer
+      foreign_key_column: id
+  - collection: app_project
+    field: epics
+    type: alias
+    meta:
+      collection: app_project
+      conditions: null
+      display: related-values
+      display_options:
+        template: '{{key}} {{name}}'
+      field: epics
+      group: null
+      hidden: false
+      interface: list-o2m
+      note: null
+      options:
+        enableCreate: false
+        template: "{{key}}\_{{name}}"
+      readonly: false
+      required: false
+      sort: 7
+      special:
+        - o2m
+      translations:
+        - language: en-US
+          translation: Epics
+        - language: nl-NL
+          translation: Epics
+      validation: null
+      validation_message: null
+      width: full
+  - collection: app_project
+    field: hour_rate
+    type: decimal
+    meta:
+      collection: app_project
+      conditions:
+        - name: Only when billable by project
+          rule:
+            _and:
+              - billable:
+                  _neq: project
+          hidden: true
+          options:
+            font: sans-serif
+            trim: false
+            masked: false
+            clear: false
+            slug: false
+      display: formatted-value
+      display_options:
+        format: true
+        prefix: €
+      field: hour_rate
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        iconLeft: euro
+        min: 0
+      readonly: false
+      required: true
+      sort: 6
+      special: null
+      translations:
+        - language: en-US
+          translation: Hour rate
+        - language: nl-NL
+          translation: Uurtarief
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: hour_rate
+      table: app_project
+      data_type: numeric
+      default_value: 0
+      max_length: null
+      numeric_precision: 8
+      numeric_scale: 2
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: id
+    type: uuid
+    meta:
+      collection: app_project
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: app_project
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: id_harvest
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: null
+      display_options: null
+      field: id_harvest
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 9
+      special: null
+      translations:
+        - language: en-US
+          translation: Harvest ID
+        - language: nl-NL
+          translation: Harvest ID
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: id_harvest
+      table: app_project
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: id_jira
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: null
+      display_options: null
+      field: id_jira
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 10
+      special: null
+      translations:
+        - language: en-US
+          translation: Jira ID
+        - language: nl-NL
+          translation: Jira ID
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id_jira
+      table: app_project
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: id_moneybird
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: null
+      display_options: null
+      field: id_moneybird
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 8
+      special: null
+      translations:
+        - language: en-US
+          translation: Moneybird ID
+        - language: nl-NL
+          translation: Moneybird ID
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: id_moneybird
+      table: app_project
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: key
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: raw
+      display_options: null
+      field: key
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        trim: true
+      readonly: false
+      required: false
+      sort: 3
+      special: null
+      translations:
+        - language: en-US
+          translation: Key
+        - language: nl-NL
+          translation: Key
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: key
+      table: app_project
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: name
+    type: string
+    meta:
+      collection: app_project
+      conditions: null
+      display: raw
+      display_options: null
+      field: name
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        trim: true
+      readonly: false
+      required: false
+      sort: 4
+      special: null
+      translations:
+        - language: en-US
+          translation: Name
+        - language: nl-NL
+          translation: Naam
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: name
+      table: app_project
       data_type: character varying
       default_value: null
       max_length: 255
@@ -883,3 +1959,45 @@ relations:
       constraint_name: app_contact_customer_foreign
       on_update: NO ACTION
       on_delete: CASCADE
+  - collection: app_epic
+    field: project
+    related_collection: app_project
+    meta:
+      junction_field: null
+      many_collection: app_epic
+      many_field: project
+      one_allowed_collections: null
+      one_collection: app_project
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: epics
+      sort_field: null
+    schema:
+      table: app_epic
+      column: project
+      foreign_key_table: app_project
+      foreign_key_column: id
+      constraint_name: app_epic_project_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: app_project
+    field: customer
+    related_collection: app_customer
+    meta:
+      junction_field: null
+      many_collection: app_project
+      many_field: customer
+      one_allowed_collections: null
+      one_collection: app_customer
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: projects
+      sort_field: null
+    schema:
+      table: app_project
+      column: customer
+      foreign_key_table: app_customer
+      foreign_key_column: id
+      constraint_name: app_project_customer_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL

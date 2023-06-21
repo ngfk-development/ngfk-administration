@@ -1,0 +1,111 @@
+directus_settings:
+  - id: 1
+    project_name: NGFK Development
+    project_url: https://admin.ngfk.dev
+    project_color: '#008793'
+    project_logo: null
+    public_foreground: null
+    public_background: null
+    public_note: null
+    auth_login_attempts: 25
+    auth_password_policy: null
+    storage_asset_transform: all
+    storage_asset_presets: null
+    custom_css: |
+      @media (prefers-color-scheme: dark) {
+          body.auto {
+            --primary-10: #142026 !important;
+            --primary-25: #113238 !important;
+            --primary-50: #0b4e57 !important;
+            --primary-75: #066b75 !important;
+            --primary-90: #027c87 !important;
+            --primary: #008793 !important;
+            --primary-110: #1a939e !important;
+            --primary-125: #40a5ae !important;
+            --primary-150: #80c3c9 !important;
+            --primary-175: #bfe1e4 !important;
+            --primary-190: #e6f3f4 !important;
+        }
+      }
+    storage_default_folder: null
+    basemaps: null
+    mapbox_key: null
+    module_bar:
+      - type: module
+        id: content
+        enabled: true
+      - type: module
+        id: users
+        enabled: false
+      - type: module
+        id: files
+        enabled: true
+      - type: module
+        id: insights
+        enabled: false
+      - type: module
+        id: settings
+        enabled: true
+        locked: true
+    project_descriptor: Administration
+    default_language: en-US
+    custom_aspect_ratios: null
+directus_translations:
+  - id: 13c2ddc5-589d-4e56-adca-61f508ac52ff
+    language: nl-NL
+    key: task
+    value: Taak
+  - id: 90151c4a-7970-43f6-b449-1476ad814be5
+    language: en-US
+    key: task
+    value: Task
+  - id: 99ed2b13-9e09-4300-9128-95f15a0674f6
+    language: nl-NL
+    key: project
+    value: Project
+  - id: da69e6a8-fffd-4e64-8ab8-7c97f2e142a6
+    language: en-US
+    key: project
+    value: Project
+app_customer:
+  - city: Almere
+    id: 5f11c0be-5cad-422b-b64c-27b2670f1db7
+    id_harvest: '13420955'
+    id_moneybird: '390110839847257494'
+    kvk_number: '89310233'
+    name: NGFK Development
+    postal_code: 1334KB
+    street: Detroitpad 14
+    vat_number: NL217480457B01
+app_contact:
+  - customer: 5f11c0be-5cad-422b-b64c-27b2670f1db7
+    email: rick@ngfk.dev
+    first_name: Rick
+    id: e0948cef-190b-4bdd-8576-004f577c18a2
+    id_harvest: '10115773'
+    id_moneybird: '390110839847257494'
+    last_name: Koster
+    phone: '+31618690178'
+    title: Eigenaar
+app_project:
+  - billable: project
+    customer: 5f11c0be-5cad-422b-b64c-27b2670f1db7
+    hour_rate: '0.00'
+    id: 1097af7e-46f2-4278-b546-8551a769b194
+    id_harvest: '37445185'
+    id_jira: '10006'
+    id_moneybird: '391274092030854676'
+    key: NDA
+    name: Administration
+app_epic:
+  - billable: true
+    date_end: '2023-06-13'
+    date_start: '2023-06-12'
+    hour_rate: '0.00'
+    id: 5c669c2f-4058-49d6-9c56-be8e0145efd6
+    id_harvest: null
+    id_harvest_assignment: null
+    id_jira: '10046'
+    key: NDA-1
+    name: Project setup
+    project: 1097af7e-46f2-4278-b546-8551a769b194
