@@ -21,8 +21,6 @@ export async function loadJiraEpic(
     limit: 1,
   });
 
-  console.log(JSON.stringify(entity));
-
   if (action === 'delete') {
     if (existing) await service.deleteOne(existing.id);
   } else if (action === 'upsert') {
