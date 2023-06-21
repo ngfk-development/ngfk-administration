@@ -87,3 +87,13 @@ app_contact:
     last_name: Koster
     phone: '+31618690178'
     title: Eigenaar
+app_project:
+  - billable: project
+    customer: 5f11c0be-5cad-422b-b64c-27b2670f1db7
+    hour_rate: '0.00'
+    id: 1097af7e-46f2-4278-b546-8551a769b194
+    id_harvest: '37445185'
+    id_jira: '10006'
+    id_moneybird: '391274092030854676'
+    key: NDA
+    name: Administration
