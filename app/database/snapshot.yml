@@ -1154,7 +1154,7 @@ fields:
           rule:
             _and:
               - billable:
-                  _eq: true
+                  _eq: false
           hidden: true
           options:
             font: sans-serif
