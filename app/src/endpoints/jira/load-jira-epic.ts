@@ -34,6 +34,8 @@ export async function loadJiraEpic(
 
       key: entity.key,
       name: entity.fields.summary,
+      date_start: entity.fields.customfield_10015,
+      date_end: entity.fields.duedate,
       billable: true,
       hour_rate: 0,
       ...(project ? { project: project.id } : {}),

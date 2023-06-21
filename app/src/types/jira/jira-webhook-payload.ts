@@ -4,6 +4,7 @@ import { JiraUser } from './jira-user';
 
 interface JiraWebhookPayloadBase {
   timestamp: number;
+  issue_event_type_name: string;
   webhookEvent: string;
 }
 

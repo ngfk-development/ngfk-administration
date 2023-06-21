@@ -4,6 +4,8 @@ export interface JiraIssue {
   fields: {
     summary: string;
     description: string;
+    customfield_10015: string;
+    duedate: string;
     project: {
       id: number;
       self: string;

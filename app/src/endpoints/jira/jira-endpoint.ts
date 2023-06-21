@@ -14,13 +14,12 @@ export async function jiraEndpoint(
   try {
     const ctx: ExtensionContext = { ...apiCtx, accountability, schema };
     const payload: JiraWebhookPayload = body;
-    const action = payload.webhookEvent.endsWith('_deleted')
-      ? 'delete'
-      : 'upsert';
+    const { issue_event_type_name: event } = payload;
+    const action = event.endsWith('_deleted') ? 'delete' : 'upsert';
 
-    if (payload.webhookEvent.startsWith('project') && 'project' in payload)
+    if (event.startsWith('project') && 'project' in payload)
       await loadJiraProject(ctx, payload.project, action);
-    else if (payload.webhookEvent.startsWith('issue') && 'issue' in payload)
+    else if (event.startsWith('issue') && 'issue' in payload)
       await loadJiraEpic(ctx, payload.issue, action);
     else console.log(JSON.stringify(payload));
 

@@ -6,8 +6,8 @@ export interface Epic {
 
   key: string;
   name: string;
-  date_start?: Date;
-  date_end?: Date;
+  date_start?: string;
+  date_end?: string;
   billable: boolean;
   hour_rate: number;
   project?: string;
