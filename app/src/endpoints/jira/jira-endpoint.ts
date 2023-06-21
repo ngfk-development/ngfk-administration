@@ -22,6 +22,7 @@ export async function jiraEndpoint(
       await loadJiraProject(ctx, payload.project, action);
     else if (payload.webhookEvent.startsWith('issue') && 'issue' in payload)
       await loadJiraEpic(ctx, payload.issue, action);
+    else console.log(JSON.stringify(payload));
 
     res.status(200).end();
   } catch (e) {
