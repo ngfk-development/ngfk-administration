@@ -70,26 +70,39 @@ function fetchCustomers(ctx: ExtensionContext, projects: Project[]) {
 }
 
 function parseProject(customer: Customer, project: Project) {
+  const numberFormatter = new Intl.NumberFormat('nl-NL');
+
   const harvestProject: Partial<HarvestProject> = {
     ...(customer?.id_harvest ? { client_id: +customer.id_harvest } : {}),
-    bill_by: parseBillBy(project.billable),
-    budget_by: 'none',
-    hourly_rate: new Intl.NumberFormat('nl-NL').format(project.hour_rate),
+    code: project.key,
+    bill_by: parseBillBy(project),
+    budget_by: parseBudgetBy(project),
+    hourly_rate: numberFormatter.format(project.hour_rate),
+    budget: numberFormatter.format(project.budget),
+    fee: numberFormatter.format(project.fee),
+    is_fixed_fee: project.billable === 'fixed',
     is_active: true,
     is_billable: !!project.billable,
     name: project.name,
   };
 
+  console.log('PARSE PROJECT', harvestProject);
   return harvestProject;
 }
 
-function parseBillBy(billable: Project['billable']): HarvestProject['bill_by'] {
-  switch (billable) {
+function parseBillBy(project: Project): HarvestProject['bill_by'] {
+  switch (project.billable) {
     case 'project':
       return 'Project';
     case 'task':
       return 'Task';
+    case 'fixed':
+      return 'none';
     default:
       return 'none';
   }
+}
+
+function parseBudgetBy(project: Project): HarvestProject['budget_by'] {
+  return project.billable === 'fixed' ? 'project' : 'none';
 }

@@ -1257,7 +1257,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 9
+      sort: 10
       special: null
       translations:
         - language: en-US
@@ -1299,7 +1299,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 10
+      sort: 11
       special: null
       translations:
         - language: en-US
@@ -1341,7 +1341,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 11
+      sort: 12
       special: null
       translations:
         - language: en-US
@@ -1512,6 +1512,8 @@ fields:
             value: project
           - text: $t:task
             value: task
+          - text: $t:fixed_fee
+            value: fixed
       field: billable
       group: null
       hidden: false
@@ -1524,6 +1526,8 @@ fields:
             value: project
           - text: $t:task
             value: task
+          - text: $t:fixed_fee
+            value: fixed
       readonly: false
       required: false
       sort: 5
@@ -1544,6 +1548,64 @@ fields:
       max_length: 255
       numeric_precision: null
       numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: app_project
+    field: budget
+    type: decimal
+    meta:
+      collection: app_project
+      conditions:
+        - name: Only when billable by fixed fee
+          rule:
+            _and:
+              - billable:
+                  _neq: fixed
+          hidden: true
+          options:
+            font: sans-serif
+            trim: false
+            masked: false
+            clear: false
+            slug: false
+      display: formatted-value
+      display_options:
+        format: true
+        suffix: null
+      field: budget
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        iconLeft: avg_time
+        min: 0
+      readonly: false
+      required: true
+      sort: 8
+      special: null
+      translations:
+        - language: en-US
+          translation: Budget
+        - language: nl-NL
+          translation: Budget
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: budget
+      table: app_project
+      data_type: numeric
+      default_value: 0
+      max_length: null
+      numeric_precision: 8
+      numeric_scale: 2
       is_nullable: true
       is_unique: false
       is_primary_key: false
@@ -1617,7 +1679,7 @@ fields:
         template: "{{key}}\_{{name}}"
       readonly: false
       required: false
-      sort: 7
+      sort: 9
       special:
         - o2m
       translations:
@@ -1628,6 +1690,64 @@ fields:
       validation: null
       validation_message: null
       width: full
+  - collection: app_project
+    field: fee
+    type: decimal
+    meta:
+      collection: app_project
+      conditions:
+        - name: Only when billable by fixed fee
+          rule:
+            _and:
+              - billable:
+                  _neq: fixed
+          hidden: true
+          options:
+            font: sans-serif
+            trim: false
+            masked: false
+            clear: false
+            slug: false
+      display: formatted-value
+      display_options:
+        format: true
+        prefix: €
+      field: fee
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options:
+        iconLeft: euro
+        min: 0
+      readonly: false
+      required: true
+      sort: 7
+      special: null
+      translations:
+        - language: en-US
+          translation: Fee
+        - language: nl-NL
+          translation: Vergoeding
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: fee
+      table: app_project
+      data_type: numeric
+      default_value: 0
+      max_length: null
+      numeric_precision: 8
+      numeric_scale: 2
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: app_project
     field: hour_rate
     type: decimal
@@ -1741,7 +1861,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 9
+      sort: 11
       special: null
       translations:
         - language: en-US
@@ -1783,7 +1903,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 10
+      sort: 12
       special: null
       translations:
         - language: en-US
@@ -1825,7 +1945,7 @@ fields:
       options: null
       readonly: true
       required: false
-      sort: 8
+      sort: 10
       special: null
       translations:
         - language: en-US

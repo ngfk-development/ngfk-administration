@@ -55,6 +55,10 @@ directus_translations:
     language: nl-NL
     key: task
     value: Taak
+  - id: 7c02d750-dd2d-4f77-b327-9c2dd042c8b2
+    language: nl-NL
+    key: fixed_fee
+    value: Vaste vergoeding
   - id: 90151c4a-7970-43f6-b449-1476ad814be5
     language: en-US
     key: task
@@ -67,3 +71,7 @@ directus_translations:
     language: en-US
     key: project
     value: Project
+  - id: fb977583-58f0-49b1-86d8-0c3746f17b6c
+    language: en-US
+    key: fixed_fee
+    value: Fixed fee

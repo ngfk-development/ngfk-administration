@@ -6,7 +6,9 @@ export interface Project {
 
   name: string;
   key: string;
-  billable?: 'project' | 'task';
+  billable?: 'project' | 'task' | 'fixed';
   hour_rate: number;
+  fee: number;
+  budget: number;
   customer?: string;
 }
