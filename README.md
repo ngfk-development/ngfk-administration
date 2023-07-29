@@ -1,6 +1,6 @@
 # NGFK Development - Administration
 
-`https://admin.ngfk.dev`
+[https://admin.ngfk.dev](https://admin.ngfk.dev)
 
 ## Manual setup
 
