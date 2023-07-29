@@ -86,7 +86,6 @@ function parseProject(customer: Customer, project: Project) {
     name: project.name,
   };
 
-  console.log('PARSE PROJECT', harvestProject);
   return harvestProject;
 }
 
