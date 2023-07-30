@@ -8,6 +8,7 @@ import { mutateHarvestContact } from './harvest/mutate-harvest-contact';
 import { mutateHarvestProject } from './harvest/mutate-harvest-project';
 import { mutateHarvestTask } from './harvest/mutate-harvest-task';
 import { mutateMoneybirdProject } from './moneybird/mutate-moneybird-project';
+import { mutateMoneybirdTimeEntry } from './moneybird/mutate-moneybird-time-entry';
 
 export default defineHook((hooks, hookCtx) => {
   const { action, filter, init, schedule } = hooks;
@@ -67,4 +68,5 @@ export default defineHook((hooks, hookCtx) => {
   registerMutateFunction('app_epic', mutateHarvestTask);
 
   registerMutateFunction('app_project', mutateMoneybirdProject);
+  registerMutateFunction('app_time_entry', mutateMoneybirdTimeEntry);
 });
