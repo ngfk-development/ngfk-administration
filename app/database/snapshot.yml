@@ -2180,7 +2180,7 @@ fields:
       foreign_key_column: id
   - collection: app_time_entry
     field: date_end
-    type: date
+    type: dateTime
     meta:
       collection: app_time_entry
       conditions: null
@@ -2208,7 +2208,7 @@ fields:
     schema:
       name: date_end
       table: app_time_entry
-      data_type: date
+      data_type: timestamp without time zone
       default_value: null
       max_length: null
       numeric_precision: null
@@ -2223,7 +2223,7 @@ fields:
       foreign_key_column: null
   - collection: app_time_entry
     field: date_start
-    type: date
+    type: dateTime
     meta:
       collection: app_time_entry
       conditions: null
@@ -2251,7 +2251,7 @@ fields:
     schema:
       name: date_start
       table: app_time_entry
-      data_type: date
+      data_type: timestamp without time zone
       default_value: null
       max_length: null
       numeric_precision: null
