@@ -2,6 +2,7 @@ import { defineHook } from '@directus/extensions-sdk';
 
 import { ExtensionContext } from '../types/directus/extension-context';
 import { commandData } from './command-data/command-data';
+import { loadHarvestTimeEntries } from './harvest/load-harvest-time-entries';
 import { mutateHarvestClients } from './harvest/mutate-harvest-client';
 import { mutateHarvestContact } from './harvest/mutate-harvest-contact';
 import { mutateHarvestProject } from './harvest/mutate-harvest-project';
@@ -9,7 +10,7 @@ import { mutateHarvestTask } from './harvest/mutate-harvest-task';
 import { mutateMoneybirdProject } from './moneybird/mutate-moneybird-project';
 
 export default defineHook((hooks, hookCtx) => {
-  const { action, filter, init } = hooks;
+  const { action, filter, init, schedule } = hooks;
 
   async function registerMutateFunction(
     collection: string,
@@ -48,6 +49,16 @@ export default defineHook((hooks, hookCtx) => {
     const token = process.env.ADMIN_API_KEY;
     if (!email || !token) return input;
     return input.email === email ? { ...input, token } : input;
+  });
+
+  schedule('0 4 * * *', async () => {
+    const ctx: ExtensionContext = {
+      ...hookCtx,
+      accountability: null,
+      schema: await hookCtx.getSchema(),
+    };
+
+    await loadHarvestTimeEntries(ctx);
   });
 
   registerMutateFunction('app_customer', mutateHarvestClients);
