@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { ItemsService } from '@directus/api';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { harvest } from '../../clients/harvest';
 import { Customer } from '../../types/directus/customer';
@@ -107,5 +107,7 @@ async function fetchTimeEntries() {
 }
 
 function parseDate(day: string, time: string) {
-  return moment.utc(`${day} ${time}'`, 'YYYY-MM-DD h:mmA').toDate();
+  return moment
+    .tz(`${day} ${time}'`, 'YYYY-MM-DD h:mmA', 'Europe/Amsterdam')
+    .toDate();
 }
