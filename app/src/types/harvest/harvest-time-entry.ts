@@ -3,6 +3,7 @@ export interface HarvestTimeEntry {
   spent_date: string;
   started_time: string;
   ended_time: string;
+  hours: number;
   notes?: string;
   billable: boolean;
   client: { id: number; name: string };

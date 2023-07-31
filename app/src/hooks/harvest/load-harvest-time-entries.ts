@@ -38,9 +38,9 @@ export async function loadHarvestTimeEntries(ctx: ExtensionContext) {
   for (const harvestEntry of entries) {
     const {
       id: harvestId,
-      spent_date: spentDate,
-      started_time: startedTime,
-      ended_time: endedTime,
+      hours,
+      spent_date: date,
+      started_time: time,
       notes,
       billable,
       client: { id: clientId },
@@ -53,6 +53,13 @@ export async function loadHarvestTimeEntries(ctx: ExtensionContext) {
     const project = projects.find((p) => p.id_harvest === `${projectId}`);
     const epic = epics.find((e) => e.id_harvest === `${taskId}`);
 
+    const startedAt = moment.tz(
+      `${date} ${time}'`,
+      'YYYY-MM-DD h:mmA',
+      'Europe/Amsterdam',
+    );
+    const endedAt = startedAt.clone().add(hours, 'hours');
+
     data.push({
       id: current?.id ?? randomUUID(),
       id_moneybird: current?.id_moneybird,
@@ -61,8 +68,8 @@ export async function loadHarvestTimeEntries(ctx: ExtensionContext) {
       customer: customer?.id,
       project: project?.id,
       epic: epic?.id,
-      date_start: parseDate(spentDate, startedTime).toISOString(),
-      date_end: parseDate(spentDate, endedTime).toISOString(),
+      date_start: startedAt.toISOString(),
+      date_end: endedAt.toISOString(),
       billable: !!billable,
       notes: notes || '',
     });
@@ -104,10 +111,4 @@ async function fetchTimeEntries() {
   } while (page != null);
 
   return entries;
-}
-
-function parseDate(day: string, time: string) {
-  return moment
-    .tz(`${day} ${time}'`, 'YYYY-MM-DD h:mmA', 'Europe/Amsterdam')
-    .toDate();
 }
