@@ -82,7 +82,7 @@ function parseTimeEntry(
   return {
     started_at: entry.date_start,
     ended_at: entry.date_end,
-    description: entry.notes,
+    description: entry.notes || '-',
     contact_id: customer?.id_moneybird,
     project_id: project?.id_moneybird,
     user_id: '390107417314067505',
