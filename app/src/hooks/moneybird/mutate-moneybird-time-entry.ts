@@ -86,6 +86,6 @@ function parseTimeEntry(
     contact_id: customer?.id_moneybird,
     project_id: project?.id_moneybird,
     user_id: '390107417314067505',
-    billable: false,
+    billable: entry.billable,
   } as MoneybirdTimeEntry;
 }
