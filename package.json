@@ -3,9 +3,8 @@
   "type": "module",
   "module": "src/server.ts",
   "scripts": {
-    "build": "bun build ./src/server.ts --outdir ./dist --external '*'",
     "db:generate": "npx prisma generate",
-    "db:push": "npx prisma db push",
+    "db:push": "npx prisma db push --skip-generate",
     "format": "prettier --write . && sort-package-json ./package.json package/*/package.json",
     "format:check": "prettier --check . && sort-package-json --check ./package.json package/*/package.json",
     "postinstall": "bun run db:generate",
