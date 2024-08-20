@@ -3,9 +3,12 @@
   "type": "module",
   "module": "src/server.ts",
   "scripts": {
-    "build": "bun build ./src/server.ts --outdir ./dist",
+    "build": "bun build ./src/server.ts --outdir ./dist --external '*'",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
     "format": "prettier --write . && sort-package-json ./package.json package/*/package.json",
     "format:check": "prettier --check . && sort-package-json --check ./package.json package/*/package.json",
+    "postinstall": "bun run db:generate",
     "serve": "bun --hot run ./src/server.ts",
     "start": "NODE_ENV=production bun run ./src/server.ts",
     "watch": "bun run build --watch"
@@ -13,6 +16,7 @@
   "prettier": "@ngfk/config-prettier",
   "dependencies": {
     "@as-integrations/fastify": "^2.1.1",
+    "@prisma/client": "5.18.0",
     "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1"
   },
@@ -22,6 +26,7 @@
     "@types/bun": "latest",
     "pino-pretty": "^11.2.2",
     "prettier": "^3.3.3",
+    "prisma": "^5.18.0",
     "sort-package-json": "^2.10.0",
     "typescript": "^5.0.0"
   }
