@@ -1,0 +1,22 @@
+{
+  "name": "ngfk-administration",
+  "type": "module",
+  "module": "src/server.ts",
+  "scripts": {
+    "build": "bun build ./src/server.ts --outdir ./dist",
+    "format": "prettier --write . && sort-package-json ./package.json package/*/package.json",
+    "format:check": "prettier --check . && sort-package-json --check ./package.json package/*/package.json",
+    "serve": "bun --hot run ./src/server.ts",
+    "start": "NODE_ENV=production bun run ./src/server.ts",
+    "watch": "bun run build --watch"
+  },
+  "prettier": "@ngfk/config-prettier",
+  "devDependencies": {
+    "@ngfk/config-prettier": "^0.0.1",
+    "@ngfk/config-typescript": "^0.0.1",
+    "@types/bun": "latest",
+    "prettier": "^3.3.3",
+    "sort-package-json": "^2.10.0",
+    "typescript": "^5.0.0"
+  }
+}
