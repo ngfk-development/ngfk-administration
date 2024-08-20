@@ -10,7 +10,7 @@
     "format:check": "prettier --check . && sort-package-json --check ./package.json package/*/package.json",
     "postinstall": "bun run db:generate",
     "serve": "bun --hot run ./src/server.ts",
-    "start": "NODE_ENV=production bun run ./src/server.ts",
+    "start": "NODE_ENV=production bun run ./dist/server.js",
     "watch": "bun run build --watch"
   },
   "prettier": "@ngfk/config-prettier",
