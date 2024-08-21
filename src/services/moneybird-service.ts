@@ -8,20 +8,25 @@ export interface MoneybirdServiceOptions {
   database: PrismaClient;
   endpoint: string;
   token: string;
+  webhookToken: string;
 }
 
 export class MoneybirdService {
   #database: PrismaClient;
   #endpoint: string;
   #token: string;
+  #webhookToken: string;
 
   constructor(options: MoneybirdServiceOptions) {
     this.#database = options.database;
     this.#endpoint = options.endpoint;
     this.#token = options.token;
+    this.#webhookToken = options.webhookToken;
   }
 
   async handleEvent(event: MoneybirdEvent) {
+    if (event.webhook_token !== this.#webhookToken) return null;
+
     switch (event.action) {
       case 'contact_changed':
       case 'contact_created':

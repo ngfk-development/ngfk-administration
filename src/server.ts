@@ -33,6 +33,7 @@ app
     moneybird: {
       endpoint: process.env.MONEYBIRD_ENDPOINT,
       token: process.env.MONEYBIRD_TOKEN,
+      webhookToken: process.env.MONEYBIRD_WEBHOOK_TOKEN,
     },
   })
   .register(moneybirdWebhook)
