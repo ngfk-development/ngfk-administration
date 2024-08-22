@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
@@ -59,7 +59,7 @@ export class MoneybirdService {
   }
 
   #upsertContact(person: MoneybirdContactPerson) {
-    const data: Prisma.ContactCreateInput = {
+    const data: Omit<Prisma.ContactCreateInput, 'created_origin'> = {
       moneybird_id: person.id,
       moneybird_version: person.version,
 
@@ -69,18 +69,19 @@ export class MoneybirdService {
       email: person.email,
       title: person.department,
 
+      updated_origin: Service.MONEYBIRD,
       customer: { connect: { moneybird_id: person.contact_id } },
     };
 
     return this.#database.contact.upsert({
       where: { moneybird_id: person.id },
-      create: data,
+      create: { ...data, created_origin: Service.MONEYBIRD },
       update: data,
     });
   }
 
   #upsertCustomer(contact: MoneybirdContact) {
-    const data: Prisma.CustomerCreateInput = {
+    const data: Omit<Prisma.CustomerCreateInput, 'created_origin'> = {
       moneybird_id: contact.id,
       moneybird_version: contact.version,
       moneybird_customer_number: contact.customer_id,
@@ -93,11 +94,13 @@ export class MoneybirdService {
 
       chamber_of_commerce_number: contact.chamber_of_commerce,
       tax_number: contact.tax_number,
+
+      updated_origin: Service.MONEYBIRD,
     };
 
     return this.#database.customer.upsert({
       where: { moneybird_id: contact.id },
-      create: data,
+      create: { ...data, created_origin: Service.MONEYBIRD },
       update: data,
     });
   }

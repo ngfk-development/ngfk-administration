@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Service {
+  MONEYBIRD @map("moneybird")
+  HARVEST   @map("harvest")
+  JIRA      @map("jira")
+}
+
 model Customer {
   id String @id @default(uuid()) @db.Uuid
 
@@ -23,6 +29,11 @@ model Customer {
   chamber_of_commerce_number String?   @db.VarChar
   tax_number                 String?   @db.VarChar
   Contact                    Contact[]
+
+  created_origin Service
+  created_at     DateTime @default(now())
+  updated_origin Service
+  updated_at     DateTime @updatedAt
 
   @@index([moneybird_id])
   @@map("customers")
@@ -42,6 +53,11 @@ model Contact {
   phone      String?
   email      String?
   title      String?
+
+  created_origin Service
+  created_at     DateTime @default(now())
+  updated_origin Service
+  updated_at     DateTime @updatedAt
 
   @@index([moneybird_id])
   @@map("contacts")
