@@ -1,18 +1,19 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
+import { Database } from '~/types/database';
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
 import { MoneybirdContactPerson } from '~/types/moneybird/moneybird-contact-person';
 import { MoneybirdEvent } from '~/types/moneybird/moneybird-event';
 
 export interface MoneybirdServiceOptions {
-  database: PrismaClient;
+  database: Database;
   endpoint: string;
   token: string;
   webhookToken: string;
 }
 
 export class MoneybirdService {
-  #database: PrismaClient;
+  #database: Database;
   #endpoint: string;
   #token: string;
   #webhookToken: string;

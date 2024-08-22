@@ -22,10 +22,9 @@ declare module 'fastify' {
 }
 
 export default fastifyPlugin<Options>(async (app, options) => {
-  const moneybird = new MoneybirdService({
-    ...options.moneybird,
-    database: app.database,
-  });
+  const { database } = app;
+
+  const moneybird = new MoneybirdService({ ...options.moneybird, database });
 
   app.decorate('moneybird', moneybird);
 });

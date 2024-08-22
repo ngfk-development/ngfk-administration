@@ -17,12 +17,14 @@
     "@as-integrations/fastify": "^2.1.1",
     "@prisma/client": "5.18.0",
     "fastify": "^4.28.1",
-    "fastify-plugin": "^4.5.1"
+    "fastify-plugin": "^4.5.1",
+    "pubsub-js": "^1.9.4"
   },
   "devDependencies": {
     "@ngfk/config-prettier": "^0.0.1",
     "@ngfk/config-typescript": "^0.0.1",
     "@types/bun": "latest",
+    "@types/pubsub-js": "^1.8.6",
     "pino-pretty": "^11.2.2",
     "prettier": "^3.3.3",
     "prisma": "^5.18.0",
