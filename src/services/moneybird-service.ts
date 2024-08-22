@@ -46,6 +46,24 @@ export class MoneybirdService {
     }
   }
 
+  async synchronize() {
+    // MoneybirdContact - Customer
+    const contacts = await this.listContacts();
+    await this.#database.$transaction(
+      contacts.map((contact) => this.#upsertCustomer(contact)),
+    );
+
+    // MoneybirdContactPerson - Contact
+    const contactPeople = contacts.flatMap((contact) => contact.contact_people);
+    await this.#database.$transaction(
+      contactPeople.map((person) => this.#upsertContact(person)),
+    );
+  }
+
+  listContacts() {
+    return this.#fetch<MoneybirdContact[]>('GET', '/contacts');
+  }
+
   #deleteContact(contact: MoneybirdContactPerson) {
     return this.#database.contact.delete({
       where: { moneybird_id: contact.id },

@@ -25,6 +25,7 @@ export default fastifyPlugin<Options>(async (app, options) => {
   const { database } = app;
 
   const moneybird = new MoneybirdService({ ...options.moneybird, database });
+  await moneybird.synchronize();
 
   app.decorate('moneybird', moneybird);
 });
