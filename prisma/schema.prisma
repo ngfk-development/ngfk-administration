@@ -16,6 +16,7 @@ enum Service {
 model Customer {
   id String @id @default(uuid()) @db.Uuid
 
+  harvest_id                Int?    @unique
   moneybird_id              String? @unique @db.VarChar
   moneybird_version         Int?
   moneybird_customer_number String? @db.VarChar
@@ -45,6 +46,7 @@ model Contact {
   customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id String   @db.Uuid
 
+  harvest_id        Int?    @unique
   moneybird_id      String? @unique @db.VarChar
   moneybird_version Int?
 

@@ -30,6 +30,11 @@ const app = Fastify({
 app
   .register(database)
   .register(services, {
+    harvest: {
+      accountId: process.env.HARVEST_ACCOUNT_ID,
+      endpoint: process.env.HARVEST_ENDPOINT,
+      token: process.env.HARVEST_TOKEN,
+    },
     moneybird: {
       endpoint: process.env.MONEYBIRD_ENDPOINT,
       token: process.env.MONEYBIRD_TOKEN,
