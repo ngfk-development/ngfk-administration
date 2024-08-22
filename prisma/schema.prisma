@@ -7,14 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Service {
+  MONEYBIRD @map("moneybird")
+  HARVEST   @map("harvest")
+  JIRA      @map("jira")
+}
+
 model Customer {
   id String @id @default(uuid()) @db.Uuid
 
+  moneybird_id              String? @unique @db.VarChar
+  moneybird_version         Int?
+  moneybird_customer_number String? @db.VarChar
+
+  company_name String? @db.VarChar
+  address      String? @db.VarChar
+  zipcode      String? @db.VarChar
+  city         String? @db.VarChar
+  country      String? @db.VarChar
+
+  chamber_of_commerce_number String?   @db.VarChar
+  tax_number                 String?   @db.VarChar
+  Contact                    Contact[]
+
+  created_origin Service
+  created_at     DateTime @default(now())
+  updated_origin Service
+  updated_at     DateTime @updatedAt
+
+  @@index([moneybird_id])
   @@map("customers")
 }
 
 model Contact {
   id String @id @default(uuid()) @db.Uuid
 
+  customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  customer_id String   @db.Uuid
+
+  moneybird_id      String? @unique @db.VarChar
+  moneybird_version Int?
+
+  first_name String?
+  last_name  String?
+  phone      String?
+  email      String?
+  title      String?
+
+  created_origin Service
+  created_at     DateTime @default(now())
+  updated_origin Service
+  updated_at     DateTime @updatedAt
+
+  @@index([moneybird_id])
   @@map("contacts")
 }

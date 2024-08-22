@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
 
+import moneybirdWebhook from '~/controllers/moneybird-webhook';
 import database from '~/utils/database';
+import services from '~/utils/services';
 
 const PORT = process.env.PORT || '4000';
 
@@ -27,11 +29,13 @@ const app = Fastify({
 
 app
   .register(database)
-  .get('/live', async () => {
-    type QueryResponse = { version: number }[];
-    const resp = await app.database.$queryRaw<QueryResponse>`SELECT version()`;
-    const database = resp[0].version;
-
-    return { success: true, database };
+  .register(services, {
+    moneybird: {
+      endpoint: process.env.MONEYBIRD_ENDPOINT,
+      token: process.env.MONEYBIRD_TOKEN,
+      webhookToken: process.env.MONEYBIRD_WEBHOOK_TOKEN,
+    },
   })
+  .register(moneybirdWebhook)
+  .get('/live', async () => ({ success: true }))
   .listen({ host: '0.0.0.0', port: parseInt(PORT, 10) });
