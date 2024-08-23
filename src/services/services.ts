@@ -38,6 +38,7 @@ export default fastifyPlugin<Options>(async (app, options) => {
   }
 
   async function initializeSubscriptions() {
+    moneybird.initializeSubscriptions();
     harvest.initializeSubscriptions();
   }
 
