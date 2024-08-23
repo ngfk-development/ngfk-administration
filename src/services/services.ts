@@ -1,10 +1,12 @@
 import fastifyPlugin from 'fastify-plugin';
 
 import { HarvestService } from '~/services/harvest-service';
+import { JiraService } from '~/services/jira-service';
 import { MoneybirdService } from '~/services/moneybird-service';
 
 interface ServiceMap {
   harvest: typeof HarvestService;
+  jira: typeof JiraService;
   moneybird: typeof MoneybirdService;
 }
 
@@ -27,9 +29,11 @@ export default fastifyPlugin<Options>(async (app, options) => {
   const { database } = app;
 
   const harvest = new HarvestService({ ...options.harvest, database });
+  const jira = new JiraService({ ...options.jira, database });
   const moneybird = new MoneybirdService({ ...options.moneybird, database });
 
   app.decorate('harvest', harvest);
+  app.decorate('jira', jira);
   app.decorate('moneybird', moneybird);
 
   async function synchronize() {
@@ -39,6 +43,7 @@ export default fastifyPlugin<Options>(async (app, options) => {
 
   async function initializeSubscriptions() {
     moneybird.initializeSubscriptions();
+    jira.initializeSubscriptions();
     harvest.initializeSubscriptions();
   }
 

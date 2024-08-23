@@ -3,6 +3,10 @@ declare namespace NodeJS {
     HARVEST_ACCOUNT_ID: string;
     HARVEST_ENDPOINT: string;
     HARVEST_TOKEN: string;
+    JIRA_ENDPOINT: string;
+    JIRA_LEAD_ACCOUNT_ID: string;
+    JIRA_TOKEN: string;
+    JIRA_USERNAME: string;
     MONEYBIRD_ENDPOINT: string;
     MONEYBIRD_TOKEN: string;
     MONEYBIRD_WEBHOOK_TOKEN: string;
