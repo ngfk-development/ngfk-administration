@@ -1,10 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import fastifyPlugin from 'fastify-plugin';
 
-import { withMoneybird } from '~/utils/database-moneybird';
-import { withPubSub } from '~/utils/database-pub-sub';
-
-const extension = withMoneybird();
+import { withMoneybird } from '~/database/database-moneybird';
+import { withPubSub } from '~/database/database-pub-sub';
 
 const database = new PrismaClient()
   .$extends(withPubSub())
