@@ -37,6 +37,11 @@ resource "google_cloud_run_v2_service" "admin" {
         name       = "cloudsql"
         mount_path = "/cloudsql"
       }
+
+      volume_mounts {
+        name       = "env"
+        mount_path = "/app/.env"
+      }
     }
 
     scaling {
@@ -49,6 +54,19 @@ resource "google_cloud_run_v2_service" "admin" {
       name = "cloudsql"
       cloud_sql_instance {
         instances = [var.database_connection]
+      }
+    }
+
+    volumes {
+      name = "env"
+      secret {
+        secret = "ENV"
+
+        items {
+          version = "latest"
+          path    = "."
+          mode    = 0444
+        }
       }
     }
   }
@@ -75,6 +93,12 @@ resource "google_cloud_run_domain_mapping" "admin" {
 
 resource "google_secret_manager_secret_iam_member" "database_password" {
   secret_id = "DATABASE_URL"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret_iam_member" "env" {
+  secret_id = "ENV"
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
 }
