@@ -5,6 +5,7 @@ import { Contact, Customer, Service } from '@prisma/client';
 import { Database } from '~/types/database';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestClient } from '~/types/harvest/harvest-client';
+import { HarvestProject } from '~/types/harvest/harvest-project';
 
 export interface HarvestServiceOptions {
   accountId: string;
@@ -48,6 +49,15 @@ export class HarvestService {
     this.#database.contact.subscribe('delete', (data) => {
       this.contactsDelete(data);
     });
+  }
+
+  async synchronize() {
+    const lastUpdate = await this.#database.project.harvestLastUpdate();
+    const projects = await this.projectsGet({ updated_since: lastUpdate });
+
+    await this.#database.$transaction(
+      projects.map((project) => this.#database.project.harvestUpsert(project)),
+    );
   }
 
   async clientsDelete(data: Customer) {
@@ -122,6 +132,12 @@ export class HarvestService {
   async contactsDelete(data: Contact) {
     if (!data.harvest_id) return;
     await this.#fetch('DELETE', `/contacts/${data.harvest_id}`);
+  }
+
+  async projectsGet(params: { updated_since?: string } = {}) {
+    type Data = { projects: HarvestProject[] };
+    const data = await this.#fetch<Data>('GET', '/projects', { params });
+    return data.projects;
   }
 
   async #fetch<T = unknown>(

@@ -26,12 +26,27 @@ declare module 'fastify' {
 export default fastifyPlugin<Options>(async (app, options) => {
   const { database } = app;
 
-  const moneybird = new MoneybirdService({ ...options.moneybird, database });
   const harvest = new HarvestService({ ...options.harvest, database });
-
-  await moneybird.synchronize();
-  harvest.initializeSubscriptions();
+  const moneybird = new MoneybirdService({ ...options.moneybird, database });
 
   app.decorate('harvest', harvest);
   app.decorate('moneybird', moneybird);
+
+  async function synchronize() {
+    await moneybird.synchronize();
+    await harvest.synchronize();
+  }
+
+  async function initializeSubscriptions() {
+    harvest.initializeSubscriptions();
+  }
+
+  await synchronize();
+  initializeSubscriptions();
+
+  app.cron.createJob({
+    cronTime: '* * * * *',
+    onTick: () => synchronize(),
+    start: true,
+  });
 });
