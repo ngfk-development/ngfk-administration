@@ -1,8 +1,8 @@
 import Fastify from 'fastify';
 
 import moneybirdWebhook from '~/controllers/moneybird-webhook';
-import database from '~/utils/database';
-import services from '~/utils/services';
+import database from '~/database/database';
+import services from '~/services/services';
 
 const PORT = process.env.PORT || '4000';
 

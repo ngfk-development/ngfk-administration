@@ -28,39 +28,54 @@ export class HarvestService {
 
   initializeSubscriptions() {
     this.#database.customer.subscribe('upsert', (data) => {
-      if (data.updated_origin !== Service.HARVEST) this.clientUpsert(data);
+      if (data.updated_origin === Service.HARVEST) return;
+
+      if (!data.harvest_id) this.clientsPost(data);
+      else this.clientsPatch(data);
     });
 
     this.#database.customer.subscribe('delete', (data) => {
-      this.clientDelete(data);
+      this.clientsDelete(data);
     });
 
     this.#database.contact.subscribe('upsert', (data) => {
-      if (data.updated_origin !== Service.HARVEST) this.contactUpsert(data);
+      if (data.updated_origin === Service.HARVEST) return;
+
+      if (!data.harvest_id) this.contactsPost(data);
+      else this.contactsPatch(data);
     });
 
     this.#database.contact.subscribe('delete', (data) => {
-      this.contactDelete(data);
+      this.contactsDelete(data);
     });
   }
 
-  async clientUpsert(data: Customer) {
-    if (data.harvest_id) {
-      await this.#fetch('PATCH', `/clients/${data.harvest_id!}`, {
+  async clientsDelete(data: Customer) {
+    if (!data.harvest_id) return;
+    await this.#fetch<HarvestClient>('DELETE', `/clients/${data.harvest_id}`);
+  }
+
+  async clientsPatch(data: Customer) {
+    if (!data.harvest_id) return;
+
+    await this.#fetch('PATCH', `/clients/${data.harvest_id!}`, {
+      params: {
         name: data.company_name,
         is_active: true,
         address: `${data.address}\n${data.zipcode} ${data.city}`,
         currency: 'EUR',
-      });
+      },
+    });
+  }
 
-      return;
-    }
-
+  async clientsPost(data: Customer) {
     const client = await this.#fetch<HarvestClient>('POST', '/clients', {
-      name: data.company_name,
-      is_active: true,
-      address: `${data.address}\n${data.zipcode} ${data.city}`,
-      currency: 'EUR',
+      params: {
+        name: data.company_name,
+        is_active: true,
+        address: `${data.address}\n${data.zipcode} ${data.city}`,
+        currency: 'EUR',
+      },
     });
 
     await this.#database.customer.update({
@@ -69,24 +84,21 @@ export class HarvestService {
     });
   }
 
-  async clientDelete(data: Customer) {
+  async contactsPatch(data: Contact) {
     if (!data.harvest_id) return;
-    await this.#fetch<HarvestClient>('DELETE', `/clients/${data.harvest_id}`);
-  }
 
-  async contactUpsert(data: Contact) {
-    if (data.harvest_id) {
-      await this.#fetch('PATCH', `/contacts/${data.harvest_id}`, {
+    await this.#fetch('PATCH', `/contacts/${data.harvest_id}`, {
+      params: {
         first_name: data.first_name,
         last_name: data.last_name,
         title: data.title,
         email: data.email,
         phone_mobile: data.phone,
-      });
+      },
+    });
+  }
 
-      return;
-    }
-
+  async contactsPost(data: Contact) {
     const customer = await this.#database.customer.findUnique({
       where: { id: data.customer_id },
     });
@@ -94,21 +106,20 @@ export class HarvestService {
     if (!customer?.harvest_id) return;
 
     const contact = await this.#fetch<HarvestContact>('POST', '/contacts', {
-      client_id: customer.harvest_id,
-      first_name: data.first_name,
-      last_name: data.last_name,
-      title: data.title,
-      email: data.email,
-      phone_mobile: data.phone,
+      params: {
+        client_id: customer.harvest_id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        title: data.title,
+        email: data.email,
+        phone_mobile: data.phone,
+      },
     });
 
-    await this.#database.contact.update({
-      data: { harvest_id: contact.id },
-      where: { id: data.id },
-    });
+    await this.#database.contact.harvestUpdate(data, contact);
   }
 
-  async contactDelete(data: Contact) {
+  async contactsDelete(data: Contact) {
     if (!data.harvest_id) return;
     await this.#fetch('DELETE', `/contacts/${data.harvest_id}`);
   }
@@ -116,11 +127,13 @@ export class HarvestService {
   async #fetch<T = unknown>(
     method: string,
     path: string,
-    params: querystring.ParsedUrlQueryInput = {},
+    options: { params?: querystring.ParsedUrlQueryInput } = {},
   ): Promise<T> {
-    const query = querystring.stringify(params);
+    const query = options.params
+      ? `?${querystring.stringify(options.params)}`
+      : '';
 
-    const response = await fetch(`${this.#endpoint}${path}?${query}`, {
+    const response = await fetch(`${this.#endpoint}${path}${query}`, {
       method: method,
       headers: {
         'Authorization': `Bearer ${this.#token}`,

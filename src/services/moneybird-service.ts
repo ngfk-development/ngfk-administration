@@ -1,9 +1,10 @@
-import { Prisma, Service } from '@prisma/client';
+import { PrismaPromise } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
-import { MoneybirdContactPerson } from '~/types/moneybird/moneybird-contact-person';
 import { MoneybirdEvent } from '~/types/moneybird/moneybird-event';
+import { MoneybirdSync } from '~/types/moneybird/moneybird-sync';
+import { iterateChunks } from '~/utils/iterate-chunks';
 
 export interface MoneybirdServiceOptions {
   database: Database;
@@ -31,15 +32,15 @@ export class MoneybirdService {
     switch (event.action) {
       case 'contact_changed':
       case 'contact_created':
-        return this.#upsertCustomer(event.entity);
+        return this.#database.customer.moneybirdUpsert(event.entity);
       case 'contact_destroyed':
-        return this.#deleteCustomer(event.entity);
+        return this.#database.customer.moneybirdDelete(event.entity);
 
       case 'contact_person_created':
       case 'contact_person_updated':
-        return this.#upsertContact(event.entity);
+        return this.#database.contact.moneybirdUpsert(event.entity);
       case 'contact_person_destroyed':
-        return this.#deleteContact(event.entity);
+        return this.#database.contact.moneybirdDelete(event.entity);
 
       default:
         return null;
@@ -47,86 +48,55 @@ export class MoneybirdService {
   }
 
   async synchronize() {
-    // MoneybirdContact - Customer
-    const contacts = await this.listContacts();
-    await this.#database.$transaction(
-      contacts.map((contact) => this.#upsertCustomer(contact)),
+    const tasks: PrismaPromise<any>[] = [];
+    const sync = await this.contactsSynchronizationGet();
+
+    for await (const contact of this.iterateUpdatedContacts({ sync })) {
+      tasks.push(this.#database.customer.moneybirdUpsert(contact));
+
+      for (const person of contact.contact_people) {
+        tasks.push(this.#database.contact.moneybirdUpsert(person));
+      }
+    }
+
+    tasks.push(
+      this.#database.customer.deleteMany({
+        where: { moneybird_id: { notIn: sync.map((s) => s.id) } },
+      }),
     );
 
-    // MoneybirdContactPerson - Contact
-    const contactPeople = contacts.flatMap((contact) => contact.contact_people);
-    await this.#database.$transaction(
-      contactPeople.map((person) => this.#upsertContact(person)),
-    );
+    await this.#database.$transaction(tasks);
   }
 
-  listContacts() {
-    return this.#fetch<MoneybirdContact[]>('GET', '/contacts');
+  async *iterateUpdatedContacts(options: { sync?: MoneybirdSync[] }) {
+    const sync = options.sync ?? (await this.contactsSynchronizationGet());
+    const updated = await this.#database.customer.moneybirdFindUpdated(sync);
+
+    const ids = updated.map((u) => u.moneybird_id!);
+    const chunks = iterateChunks(100, ids);
+
+    for (const ids of chunks) {
+      yield* await this.contactsSynchronizationPost(ids);
+    }
   }
 
-  #deleteContact(contact: MoneybirdContactPerson) {
-    return this.#database.contact.delete({
-      where: { moneybird_id: contact.id },
-    });
+  contactsSynchronizationGet(): Promise<MoneybirdSync[]> {
+    return this.#fetch('GET', '/contacts/synchronization');
   }
 
-  #deleteCustomer(contact: MoneybirdContact) {
-    return this.#database.customer.delete({
-      where: { moneybird_id: contact.id },
-    });
+  contactsSynchronizationPost(ids: string[]): Promise<MoneybirdContact[]> {
+    return this.#fetch('POST', '/contacts/synchronization', { data: { ids } });
   }
 
-  #upsertContact(person: MoneybirdContactPerson) {
-    const data: Omit<Prisma.ContactCreateInput, 'created_origin'> = {
-      moneybird_id: person.id,
-      moneybird_version: person.version,
-
-      first_name: person.firstname,
-      last_name: person.lastname,
-      phone: person.phone,
-      email: person.email,
-      title: person.department,
-
-      updated_origin: Service.MONEYBIRD,
-      customer: { connect: { moneybird_id: person.contact_id } },
-    };
-
-    return this.#database.contact.upsert({
-      where: { moneybird_id: person.id },
-      create: { ...data, created_origin: Service.MONEYBIRD },
-      update: data,
-    });
-  }
-
-  #upsertCustomer(contact: MoneybirdContact) {
-    const data: Omit<Prisma.CustomerCreateInput, 'created_origin'> = {
-      moneybird_id: contact.id,
-      moneybird_version: contact.version,
-      moneybird_customer_number: contact.customer_id,
-
-      company_name: contact.company_name,
-      address: contact.address1,
-      zipcode: contact.zipcode,
-      city: contact.city,
-      country: contact.country,
-
-      chamber_of_commerce_number: contact.chamber_of_commerce,
-      tax_number: contact.tax_number,
-
-      updated_origin: Service.MONEYBIRD,
-    };
-
-    return this.#database.customer.upsert({
-      where: { moneybird_id: contact.id },
-      create: { ...data, created_origin: Service.MONEYBIRD },
-      update: data,
-    });
-  }
-
-  async #fetch<T = unknown>(method: string, path: string): Promise<T> {
+  async #fetch<T = unknown>(
+    method: string,
+    path: string,
+    options: { data?: Record<string, any> } = {},
+  ): Promise<T> {
     const response = await fetch(`${this.#endpoint}${path}`, {
-      method: method,
+      body: options.data ? JSON.stringify(options.data) : undefined,
       headers: { Authorization: `Bearer ${this.#token}` },
+      method: method,
     });
 
     return response.json();
