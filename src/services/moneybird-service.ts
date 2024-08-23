@@ -86,7 +86,10 @@ export class MoneybirdService {
     const sync = options.sync ?? (await this.contactsSynchronizationGet());
     const updated = await this.#database.customer.moneybirdFindUpdated(sync);
 
-    const ids = updated.map((u) => u.moneybird_id!);
+    const ids = sync
+      .filter((i) => !updated.find((u) => u.moneybird_id === i.id))
+      .map((u) => u.id);
+
     const chunks = iterateChunks(100, ids);
 
     for (const ids of chunks) {

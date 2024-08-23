@@ -52,7 +52,7 @@ export function withMoneybird() {
               SELECT c.*
               FROM customers c
               JOIN (VALUES ${values}) AS s(id, version) ON c.moneybird_id = s.id
-              WHERE c.moneybird_version < s.version
+              WHERE c.moneybird_version >= s.version
             `;
           },
 
