@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import fastifyCron from 'fastify-cron';
 
 import moneybirdWebhook from '~/controllers/moneybird-webhook';
 import database from '~/database/database';
@@ -28,6 +29,7 @@ const app = Fastify({
 });
 
 app
+  .register(fastifyCron)
   .register(database)
   .register(services, {
     harvest: {

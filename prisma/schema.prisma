@@ -17,24 +17,26 @@ model Customer {
   id String @id @default(uuid()) @db.Uuid
 
   harvest_id                Int?    @unique
-  moneybird_id              String? @unique @db.VarChar
+  moneybird_id              String? @unique
   moneybird_version         Int?
-  moneybird_customer_number String? @db.VarChar
+  moneybird_customer_number String?
 
-  company_name String? @db.VarChar
-  address      String? @db.VarChar
-  zipcode      String? @db.VarChar
-  city         String? @db.VarChar
-  country      String? @db.VarChar
+  company_name String?
+  address      String?
+  zipcode      String?
+  city         String?
+  country      String?
 
-  chamber_of_commerce_number String?   @db.VarChar
-  tax_number                 String?   @db.VarChar
-  Contact                    Contact[]
+  chamber_of_commerce_number String?
+  tax_number                 String?
 
   created_origin Service
   created_at     DateTime @default(now())
   updated_origin Service
   updated_at     DateTime @updatedAt
+
+  contacts Contact[]
+  projects Project[]
 
   @@index([moneybird_id])
   @@map("customers")
@@ -47,7 +49,7 @@ model Contact {
   customer_id String   @db.Uuid
 
   harvest_id        Int?    @unique
-  moneybird_id      String? @unique @db.VarChar
+  moneybird_id      String? @unique
   moneybird_version Int?
 
   first_name String?
@@ -63,4 +65,27 @@ model Contact {
 
   @@index([moneybird_id])
   @@map("contacts")
+}
+
+model Project {
+  id String @id @default(uuid()) @db.Uuid
+
+  customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  customer_id String   @db.Uuid
+
+  harvest_id Int? @unique
+
+  name        String
+  code        String?
+  active      Boolean
+  billable    Boolean
+  hourly_rate Int
+
+  created_origin Service
+  created_at     DateTime @default(now())
+  updated_origin Service
+  updated_at     DateTime @updatedAt
+
+  @@index([updated_at])
+  @@map("projects")
 }
