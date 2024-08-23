@@ -38,7 +38,7 @@ model Customer {
   contacts Contact[]
   projects Project[]
 
-  @@index([moneybird_id])
+  @@index([harvest_id, moneybird_id, moneybird_version, moneybird_customer_number])
   @@map("customers")
 }
 
@@ -63,7 +63,7 @@ model Contact {
   updated_origin Service
   updated_at     DateTime @updatedAt
 
-  @@index([moneybird_id])
+  @@index([harvest_id, moneybird_id, moneybird_version])
   @@map("contacts")
 }
 
@@ -87,6 +87,6 @@ model Project {
   updated_origin Service
   updated_at     DateTime @updatedAt
 
-  @@index([updated_at])
+  @@index([harvest_id, moneybird_id, updated_at])
   @@map("projects")
 }
