@@ -1,7 +1,8 @@
-import { Customer, Prisma, Service } from '@prisma/client';
+import { Customer, Prisma, Project, Service } from '@prisma/client';
 
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
 import { MoneybirdContactPerson } from '~/types/moneybird/moneybird-contact-person';
+import { MoneybirdProject } from '~/types/moneybird/moneybird-project';
 import { MoneybirdSync } from '~/types/moneybird/moneybird-sync';
 
 export function withMoneybird() {
@@ -81,6 +82,23 @@ export function withMoneybird() {
               where: { moneybird_id: contact.id },
               create: { ...data, created_origin: Service.MONEYBIRD },
               update: data,
+            });
+          },
+        },
+        project: {
+          moneybirdUpdate<T>(
+            this: T,
+            data: Project,
+            project: MoneybirdProject,
+          ) {
+            const delegate = this as Prisma.ProjectDelegate;
+
+            return delegate.update({
+              where: { id: data.id },
+              data: {
+                moneybird_id: project.id,
+                updated_origin: Service.MONEYBIRD,
+              },
             });
           },
         },

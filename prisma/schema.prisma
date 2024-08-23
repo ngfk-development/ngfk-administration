@@ -73,7 +73,8 @@ model Project {
   customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id String   @db.Uuid
 
-  harvest_id Int? @unique
+  harvest_id   Int?    @unique
+  moneybird_id String? @unique
 
   name        String
   code        String?

@@ -1,8 +1,9 @@
-import { PrismaPromise } from '@prisma/client';
+import { PrismaPromise, Project, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
 import { MoneybirdEvent } from '~/types/moneybird/moneybird-event';
+import { MoneybirdProject } from '~/types/moneybird/moneybird-project';
 import { MoneybirdSync } from '~/types/moneybird/moneybird-sync';
 import { iterateChunks } from '~/utils/iterate-chunks';
 
@@ -47,6 +48,19 @@ export class MoneybirdService {
     }
   }
 
+  initializeSubscriptions() {
+    this.#database.project.subscribe('upsert', (data) => {
+      if (data.updated_origin === Service.MONEYBIRD) return;
+
+      if (data.moneybird_id) this.projectsPatch(data);
+      else this.projectsPost(data);
+    });
+
+    this.#database.project.subscribe('delete', (data) => {
+      this.projectsDelete(data);
+    });
+  }
+
   async synchronize() {
     const tasks: PrismaPromise<any>[] = [];
     const sync = await this.contactsSynchronizationGet();
@@ -86,6 +100,30 @@ export class MoneybirdService {
 
   contactsSynchronizationPost(ids: string[]): Promise<MoneybirdContact[]> {
     return this.#fetch('POST', '/contacts/synchronization', { data: { ids } });
+  }
+
+  async projectsPost(data: Project) {
+    if (data.moneybird_id || !data.code) return;
+
+    const project = await this.#fetch<MoneybirdProject>('POST', '/projects', {
+      data: { project: { name: `${data.code}: ${data.name}` } },
+    });
+
+    await this.#database.project.moneybirdUpdate(data, project);
+  }
+
+  async projectsPatch(data: Project) {
+    if (!data.moneybird_id) return;
+    if (!data.code) return this.projectsDelete(data);
+
+    await this.#fetch('PATCH', `/projects/${data.moneybird_id}`, {
+      data: { project: { name: `${data.code}: ${data.name}` } },
+    });
+  }
+
+  async projectsDelete(data: Project) {
+    if (!data.moneybird_id) return;
+    await this.#fetch('DELETE', `/projects/${data.moneybird_id}`);
   }
 
   async #fetch<T = unknown>(
