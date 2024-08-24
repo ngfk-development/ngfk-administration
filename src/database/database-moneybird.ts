@@ -52,7 +52,7 @@ export function withMoneybird() {
               SELECT c.*
               FROM customers c
               JOIN (VALUES ${values}) AS s(id, version) ON c.moneybird_id = s.id
-              WHERE c.moneybird_version < s.version
+              WHERE c.moneybird_version >= s.version
             `;
           },
 
@@ -64,7 +64,19 @@ export function withMoneybird() {
           moneybirdUpsert<T>(this: T, contact: MoneybirdContact) {
             const delegate = this as Prisma.CustomerDelegate;
 
+            function getCustomField(id: string) {
+              return contact.custom_fields.find((f) => f.id === id);
+            }
+
+            const harvestField = getCustomField(
+              process.env.MONEYBIRD_CUSTOM_FIELD_HARVEST_ID,
+            );
+
             const data: Omit<Prisma.CustomerCreateInput, 'created_origin'> = {
+              harvest_id: harvestField
+                ? parseInt(harvestField.value)
+                : undefined,
+
               moneybird_id: contact.id,
               moneybird_version: contact.version,
               moneybird_customer_number: contact.customer_id,
@@ -88,7 +100,7 @@ export function withMoneybird() {
         project: {
           moneybirdUpdate<T>(
             this: T,
-            data: Project,
+            data: Pick<Project, 'id'>,
             project: MoneybirdProject,
           ) {
             const delegate = this as Prisma.ProjectDelegate;

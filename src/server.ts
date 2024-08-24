@@ -37,6 +37,12 @@ app
       endpoint: process.env.HARVEST_ENDPOINT,
       token: process.env.HARVEST_TOKEN,
     },
+    jira: {
+      endpoint: process.env.JIRA_ENDPOINT,
+      token: process.env.JIRA_TOKEN,
+      username: process.env.JIRA_USERNAME,
+      leadAccountId: process.env.JIRA_LEAD_ACCOUNT_ID,
+    },
     moneybird: {
       endpoint: process.env.MONEYBIRD_ENDPOINT,
       token: process.env.MONEYBIRD_TOKEN,

@@ -68,8 +68,15 @@ module "secret_database_url" {
   region      = local.region
 }
 
+module "secret_env" {
+  source      = "./secret"
+  secret_id   = "ENV"
+  secret_data = file("../.env")
+  region      = local.region
+}
+
 module "server" {
-  depends_on = [terraform_data.push_image, module.secret_database_url]
+  depends_on = [terraform_data.push_image, module.secret_database_url, module.secret_env]
   source     = "./server"
 
   project_id          = local.project_id

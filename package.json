@@ -4,12 +4,13 @@
   "module": "src/server.ts",
   "scripts": {
     "db:generate": "npx prisma generate",
-    "db:push": "npx prisma db push --skip-generate",
+    "db:migrate": "npx prisma migrate deploy",
+    "db:push": "npx prisma db push --accept-data-loss --skip-generate",
     "format": "prettier --write . && sort-package-json ./package.json package/*/package.json",
     "format:check": "prettier --check . && sort-package-json --check ./package.json package/*/package.json",
     "postinstall": "bun run db:generate",
     "serve": "bun --hot run ./src/server.ts",
-    "start": "NODE_ENV=production bun run ./src/server.ts",
+    "start": "bun run db:migrate && NODE_ENV=production bun run ./src/server.ts",
     "watch": "bun run build --watch"
   },
   "prettier": "@ngfk/config-prettier",

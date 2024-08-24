@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import PubSub from 'pubsub-js';
 
-type Operation = 'delete' | 'upsert';
+type Operation = 'delete' | 'update' | 'upsert';
 type Name<T> = Prisma.Payload<T>['name'];
 type Result<T, O extends Operation> = Prisma.Result<T, {}, O>;
 
@@ -26,14 +26,13 @@ export function withPubSub() {
     name: 'pubsub',
     query: {
       $allModels: {
-        upsert({ args, model, operation, query }) {
+        $allOperations({ args, model, operation, query }) {
           const task = query(args);
-          task.then((data) => publish(model, operation, data));
-          return task;
-        },
-        delete({ args, model, operation, query }) {
-          const task = query(args);
-          task.then((data) => publish(model, operation, data));
+
+          if (['delete', 'update', 'upsert'].includes(operation)) {
+            task.then((data) => publish(model, operation, data));
+          }
+
           return task;
         },
       },

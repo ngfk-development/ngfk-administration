@@ -1,4 +1,6 @@
-import { PrismaPromise, Project, Service } from '@prisma/client';
+import querystring from 'node:querystring';
+
+import { Customer, Project, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
@@ -49,6 +51,12 @@ export class MoneybirdService {
   }
 
   initializeSubscriptions() {
+    this.#database.customer.subscribe('update', (data) => {
+      if (data.updated_origin === Service.MONEYBIRD) return;
+
+      if (data.harvest_id) this.contactsPatch(data);
+    });
+
     this.#database.project.subscribe('upsert', (data) => {
       if (data.updated_origin === Service.MONEYBIRD) return;
 
@@ -61,32 +69,43 @@ export class MoneybirdService {
     });
   }
 
-  async synchronize() {
-    const tasks: PrismaPromise<any>[] = [];
+  async syncContacts() {
     const sync = await this.contactsSynchronizationGet();
 
     for await (const contact of this.iterateUpdatedContacts({ sync })) {
-      tasks.push(this.#database.customer.moneybirdUpsert(contact));
+      await this.#database.customer.moneybirdUpsert(contact);
 
       for (const person of contact.contact_people) {
-        tasks.push(this.#database.contact.moneybirdUpsert(person));
+        await this.#database.contact.moneybirdUpsert(person);
       }
     }
 
-    tasks.push(
-      this.#database.customer.deleteMany({
-        where: { moneybird_id: { notIn: sync.map((s) => s.id) } },
-      }),
-    );
+    await this.#database.customer.deleteMany({
+      where: { moneybird_id: { notIn: sync.map((s) => s.id) } },
+    });
+  }
 
-    await this.#database.$transaction(tasks);
+  async syncProjects() {
+    for await (const project of this.projectsGet()) {
+      const data = await this.#database.project.findFirst({
+        where: {
+          code: project.name.split(':')[0],
+          moneybird_id: null,
+        },
+      });
+
+      if (data) await this.#database.project.moneybirdUpdate(data, project);
+    }
   }
 
   async *iterateUpdatedContacts(options: { sync?: MoneybirdSync[] }) {
     const sync = options.sync ?? (await this.contactsSynchronizationGet());
     const updated = await this.#database.customer.moneybirdFindUpdated(sync);
 
-    const ids = updated.map((u) => u.moneybird_id!);
+    const ids = sync
+      .filter((i) => !updated.find((u) => u.moneybird_id === i.id))
+      .map((u) => u.id);
+
     const chunks = iterateChunks(100, ids);
 
     for (const ids of chunks) {
@@ -102,6 +121,29 @@ export class MoneybirdService {
     return this.#fetch('POST', '/contacts/synchronization', { data: { ids } });
   }
 
+  async contactsPatch(data: Customer) {
+    await this.#fetch('PATCH', `/contacts/${data.moneybird_id}`, {
+      data: {
+        contact: {
+          company_name: data.company_name,
+          address1: data.address,
+          zipcode: data.zipcode,
+          city: data.city,
+          country: data.country,
+          chamber_of_commerce: data.chamber_of_commerce_number,
+          tax_number: data.tax_number,
+
+          custom_fields_attributes: [
+            {
+              id: process.env.MONEYBIRD_CUSTOM_FIELD_HARVEST_ID,
+              value: data.harvest_id,
+            },
+          ],
+        },
+      },
+    });
+  }
+
   async projectsPost(data: Project) {
     if (data.moneybird_id || !data.code) return;
 
@@ -110,6 +152,12 @@ export class MoneybirdService {
     });
 
     await this.#database.project.moneybirdUpdate(data, project);
+  }
+
+  async *projectsGet() {
+    yield* this.#iterate<MoneybirdProject>('GET', '/projects', {
+      params: { per_page: 25 },
+    });
   }
 
   async projectsPatch(data: Project) {
@@ -126,12 +174,38 @@ export class MoneybirdService {
     await this.#fetch('DELETE', `/projects/${data.moneybird_id}`);
   }
 
+  async *#iterate<T = unknown>(
+    method: string,
+    path: string,
+    options: {
+      data?: Record<string, any>;
+      params: { per_page: number } & querystring.ParsedUrlQueryInput;
+    },
+  ) {
+    for (let i = 1; true; i++) {
+      const page = await this.#fetch<T[]>(method, path, {
+        ...options,
+        params: { ...options.params, page: i },
+      });
+
+      yield* page;
+      if (!page.length || page.length < options.params.per_page) break;
+    }
+  }
+
   async #fetch<T = unknown>(
     method: string,
     path: string,
-    options: { data?: Record<string, any> } = {},
+    options: {
+      data?: Record<string, any>;
+      params?: querystring.ParsedUrlQueryInput;
+    } = {},
   ): Promise<T> {
-    const response = await fetch(`${this.#endpoint}${path}`, {
+    const query = options.params
+      ? `?${querystring.stringify(options.params)}`
+      : '';
+
+    const response = await fetch(`${this.#endpoint}${path}${query}`, {
       body: options.data ? JSON.stringify(options.data) : undefined,
       headers: { Authorization: `Bearer ${this.#token}` },
       method: method,

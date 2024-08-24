@@ -1,8 +1,9 @@
-import { Contact, Customer, Prisma, Service } from '@prisma/client';
+import { Contact, Customer, Epic, Prisma, Service } from '@prisma/client';
 
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestProject } from '~/types/harvest/harvest-project';
+import { HarvestTask } from '~/types/harvest/harvest-task';
 
 export function withHarvest() {
   return Prisma.defineExtension((database) =>
@@ -10,7 +11,11 @@ export function withHarvest() {
       name: 'harvest',
       model: {
         contact: {
-          harvestUpdate<T>(this: T, data: Contact, contact: HarvestContact) {
+          harvestUpdate<T>(
+            this: T,
+            data: Pick<Contact, 'id'>,
+            contact: HarvestContact,
+          ) {
             const delegate = this as Prisma.ContactDelegate;
 
             return delegate.update({
@@ -41,15 +46,17 @@ export function withHarvest() {
             });
           },
         },
-        project: {
-          async harvestLastUpdate<T>(this: T) {
-            const [{ date }] = await database.$queryRaw<[{ date?: Date }]>`
-              SELECT max(updated_at) as date FROM projects;
-            `;
+        epic: {
+          harvestUpdate<T>(this: T, data: Pick<Epic, 'id'>, task: HarvestTask) {
+            const delegate = this as Prisma.EpicDelegate;
 
-            return date?.toISOString();
+            return delegate.update({
+              where: { id: data.id },
+              data: { harvest_id: task.id },
+            });
           },
-
+        },
+        project: {
           harvestUpsert<T>(this: T, project: HarvestProject) {
             const delegate = this as Prisma.ProjectDelegate;
 
