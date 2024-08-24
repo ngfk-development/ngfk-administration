@@ -1,6 +1,6 @@
 export interface JiraProject {
-  self: string;
   id: string;
+  self: string;
   key: string;
   name: string;
   avatarUrls: {
@@ -11,7 +11,4 @@ export interface JiraProject {
   };
   projectTypeKey: 'software';
   simplified: boolean;
-  style: 'classic';
-  isPrivate: boolean;
-  properties: {};
 }

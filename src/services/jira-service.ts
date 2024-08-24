@@ -1,9 +1,12 @@
 import querystring from 'node:querystring';
 
-import { Project, Service } from '@prisma/client';
+import { PrismaPromise, Project, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
-import { JiraPaginated } from '~/types/jira/jira-paginated';
+import {
+  JiraPaginatedIssues,
+  JiraPaginatedValues,
+} from '~/types/jira/jira-paginated';
 import { JiraProject } from '~/types/jira/jira-project';
 
 export interface JiraServiceOptions {
@@ -42,6 +45,25 @@ export class JiraService {
     });
   }
 
+  async synchronize() {
+    const tasks: PrismaPromise<any>[] = [];
+
+    for await (const epic of this.iterateUpdatedEpics()) {
+      tasks.push(this.#database.epic.jiraUpsert(epic));
+    }
+
+    await this.#database.$transaction(tasks);
+  }
+
+  async *iterateUpdatedEpics() {
+    yield* this.#iterateIssues('GET', '/search', {
+      params: {
+        jql: 'IssueType = Epic',
+        maxResults: 50,
+      },
+    });
+  }
+
   async projectPost(data: Project) {
     if (data.jira_id) return;
 
@@ -77,12 +99,12 @@ export class JiraService {
   }
 
   async *projectSearchGet({ maxResults = 50 } = {}) {
-    yield* this.#iterate<JiraProject>('GET', '/project/search', {
+    yield* this.#iterateValues<JiraProject>('GET', '/project/search', {
       params: { maxResults },
     });
   }
 
-  async *#iterate<T = unknown>(
+  async *#iterateIssues(
     method: string,
     path: string,
     options: {
@@ -91,7 +113,31 @@ export class JiraService {
     },
   ) {
     for (let i = 0; true; i += options.params.maxResults) {
-      const page = await this.#fetch<JiraPaginated<T>>(method, path, {
+      const page = await this.#fetch<JiraPaginatedIssues>(method, path, {
+        ...options,
+        params: {
+          ...options.params,
+          startAt: i,
+          maxResults: options.params.maxResults,
+        },
+      });
+
+      yield* page.issues;
+
+      if (page.startAt + page.maxResults >= page.total) break;
+    }
+  }
+
+  async *#iterateValues<T = unknown>(
+    method: string,
+    path: string,
+    options: {
+      data?: Record<string, any>;
+      params: { maxResults: number } & querystring.ParsedUrlQueryInput;
+    },
+  ) {
+    for (let i = 0; true; i += options.params.maxResults) {
+      const page = await this.#fetch<JiraPaginatedValues<T>>(method, path, {
         ...options,
         params: {
           ...options.params,

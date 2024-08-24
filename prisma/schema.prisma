@@ -38,7 +38,7 @@ model Customer {
   contacts Contact[]
   projects Project[]
 
-  @@index([harvest_id, moneybird_id, moneybird_version, moneybird_customer_number])
+  @@index([moneybird_version, moneybird_customer_number])
   @@map("customers")
 }
 
@@ -63,7 +63,7 @@ model Contact {
   updated_origin Service
   updated_at     DateTime @updatedAt
 
-  @@index([harvest_id, moneybird_id, moneybird_version])
+  @@index([moneybird_version])
   @@map("contacts")
 }
 
@@ -88,6 +88,30 @@ model Project {
   updated_origin Service
   updated_at     DateTime @updatedAt
 
-  @@index([harvest_id, jira_id, moneybird_id, updated_at])
+  epics Epic[]
+
+  @@index([updated_at])
   @@map("projects")
+}
+
+model Epic {
+  id String @id @default(uuid()) @db.Uuid
+
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project_id String  @db.Uuid
+
+  harvest_id String? @unique
+  jira_id    String? @unique
+
+  code     String
+  title    String
+  status   String
+  archived Boolean
+
+  created_origin Service
+  created_at     DateTime @default(now())
+  updated_origin Service
+  updated_at     DateTime @updatedAt
+
+  @@map("epics")
 }
