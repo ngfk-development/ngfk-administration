@@ -15,5 +15,6 @@ export interface MoneybirdContact {
   tax_number: string;
   phone: string;
 
+  custom_fields: { id: string; name: string; value: string }[];
   contact_people: MoneybirdContactPerson[];
 }

@@ -1,6 +1,6 @@
 import querystring from 'node:querystring';
 
-import { PrismaPromise, Project, Service } from '@prisma/client';
+import { Project, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import {
@@ -32,7 +32,7 @@ export class JiraService {
     this.#username = options.username;
   }
 
-  async initializeSubscriptions() {
+  initializeSubscriptions() {
     this.#database.project.subscribe('upsert', (data) => {
       if (data.updated_origin === Service.JIRA) return;
 
@@ -45,14 +45,29 @@ export class JiraService {
     });
   }
 
-  async synchronize() {
-    const tasks: PrismaPromise<any>[] = [];
+  async syncProjects() {
+    for await (const project of this.projectSearchGet()) {
+      const data = await this.#database.project.findFirst({
+        where: { code: project.key, jira_id: null },
+      });
 
-    for await (const epic of this.iterateUpdatedEpics()) {
-      tasks.push(this.#database.epic.jiraUpsert(epic));
+      if (data) await this.#database.project.jiraUpdate(data, project);
     }
+  }
 
-    await this.#database.$transaction(tasks);
+  async syncEpics() {
+    for await (const epic of this.iterateUpdatedEpics()) {
+      const data = await this.#database.epic.findUnique({
+        where: { jira_id: epic.id },
+      });
+
+      if (
+        !data ||
+        data.updated_at.getDate() < new Date(epic.fields.updated).getDate()
+      ) {
+        await this.#database.epic.jiraUpsert(epic);
+      }
+    }
   }
 
   async *iterateUpdatedEpics() {
@@ -78,7 +93,15 @@ export class JiraService {
       },
     });
 
-    await this.#database.project.jiraUpdate(data, project);
+    await this.#database.project.jiraUpdate(data, {
+      id: project.id.toString(),
+    });
+  }
+
+  async *projectSearchGet({ maxResults = 50 } = {}) {
+    yield* this.#iterateValues<JiraProject>('GET', '/project/search', {
+      params: { maxResults },
+    });
   }
 
   async projectPut(data: Project) {
@@ -95,12 +118,6 @@ export class JiraService {
 
     await this.#fetch('DELETE', `/project/${data.jira_id}`, {
       params: { enableUndo: true },
-    });
-  }
-
-  async *projectSearchGet({ maxResults = 50 } = {}) {
-    yield* this.#iterateValues<JiraProject>('GET', '/project/search', {
-      params: { maxResults },
     });
   }
 

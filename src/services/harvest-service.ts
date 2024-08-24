@@ -6,6 +6,7 @@ import { Database } from '~/types/database';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestProject } from '~/types/harvest/harvest-project';
+import { HarvestPaginated } from '~/types/harvest/harvest-paginated';
 
 export interface HarvestServiceOptions {
   accountId: string;
@@ -51,13 +52,43 @@ export class HarvestService {
     });
   }
 
-  async synchronize() {
-    const lastUpdate = await this.#database.project.harvestLastUpdate();
-    const projects = await this.projectsGet({ updated_since: lastUpdate });
+  async syncContacts() {
+    for await (const contact of this.contactsGet()) {
+      await this.#database.$transaction(async (tx) => {
+        const data = await tx.contact.findFirst({
+          where: {
+            customer: { harvest_id: contact.client.id },
+            first_name: contact.first_name,
+            last_name: contact.last_name,
+          },
+        });
 
-    await this.#database.$transaction(
-      projects.map((project) => this.#database.project.harvestUpsert(project)),
-    );
+        if (!data) return;
+        if (
+          !data.harvest_id ||
+          data.updated_at.getDate() < new Date(contact.update_at).getDate()
+        ) {
+          await tx.contact.harvestUpdate(data, contact);
+        }
+      });
+    }
+  }
+
+  async syncProjects() {
+    for await (const project of this.projectsGet()) {
+      await this.#database.$transaction(async (tx) => {
+        const data = await tx.project.findUnique({
+          where: { harvest_id: project.id },
+        });
+
+        if (
+          !data ||
+          data.updated_at.getDate() < new Date(project.updated_at).getDate()
+        ) {
+          await tx.project.harvestUpsert(project);
+        }
+      });
+    }
   }
 
   async clientsDelete(data: Customer) {
@@ -88,10 +119,16 @@ export class HarvestService {
       },
     });
 
-    await this.#database.customer.update({
-      data: { harvest_id: client.id },
-      where: { id: data.id },
-    });
+    await this.#database.customer.harvestUpdate(data, client);
+  }
+
+  async *contactsGet() {
+    yield* this.#iterate<'contacts', HarvestContact>(
+      'GET',
+      '/contacts',
+      'contacts',
+      { params: { per_page: 2000 } },
+    );
   }
 
   async contactsPatch(data: Contact) {
@@ -134,10 +171,35 @@ export class HarvestService {
     await this.#fetch('DELETE', `/contacts/${data.harvest_id}`);
   }
 
-  async projectsGet(params: { updated_since?: string } = {}) {
-    type Data = { projects: HarvestProject[] };
-    const data = await this.#fetch<Data>('GET', '/projects', { params });
-    return data.projects;
+  async *projectsGet() {
+    yield* this.#iterate<'projects', HarvestProject>(
+      'GET',
+      '/projects',
+      'projects',
+      { params: { per_page: 2000 } },
+    );
+  }
+
+  async *#iterate<K extends string, T = unknown>(
+    method: string,
+    path: string,
+    key: K,
+    options: { params: { per_page: number } & querystring.ParsedUrlQueryInput },
+  ) {
+    for (let i = 1; true; i++) {
+      const page = await this.#fetch<HarvestPaginated<K, T>>(method, path, {
+        ...options,
+        params: {
+          ...options.params,
+          page: i,
+          per_page: options.params.per_page,
+        },
+      });
+
+      yield* page[key];
+
+      if (!page.next_page) break;
+    }
   }
 
   async #fetch<T = unknown>(

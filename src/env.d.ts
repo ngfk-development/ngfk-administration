@@ -7,6 +7,7 @@ declare namespace NodeJS {
     JIRA_LEAD_ACCOUNT_ID: string;
     JIRA_TOKEN: string;
     JIRA_USERNAME: string;
+    MONEYBIRD_CUSTOM_FIELD_HARVEST_ID: string;
     MONEYBIRD_ENDPOINT: string;
     MONEYBIRD_TOKEN: string;
     MONEYBIRD_WEBHOOK_TOKEN: string;

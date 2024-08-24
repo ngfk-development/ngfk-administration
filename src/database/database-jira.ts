@@ -1,6 +1,7 @@
 import { Prisma, Project, Service } from '@prisma/client';
 
 import { JiraIssue } from '~/types/jira/jira-issue';
+import { JiraProject } from '~/types/jira/jira-project';
 
 export function withJira() {
   return Prisma.defineExtension({
@@ -28,7 +29,11 @@ export function withJira() {
         },
       },
       project: {
-        jiraUpdate<T>(this: T, data: Project, project: { id: number }) {
+        jiraUpdate<T>(
+          this: T,
+          data: Pick<Project, 'id'>,
+          project: Pick<JiraProject, 'id'>,
+        ) {
           const delegate = this as Prisma.ProjectDelegate;
 
           return delegate.update({

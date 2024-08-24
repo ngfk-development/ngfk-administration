@@ -5,7 +5,7 @@
   "scripts": {
     "db:generate": "npx prisma generate",
     "db:migrate": "npx prisma migrate deploy",
-    "db:push": "npx prisma db push --skip-generate",
+    "db:push": "npx prisma db push --accept-data-loss --skip-generate",
     "format": "prettier --write . && sort-package-json ./package.json package/*/package.json",
     "format:check": "prettier --check . && sort-package-json --check ./package.json package/*/package.json",
     "postinstall": "bun run db:generate",

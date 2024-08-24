@@ -10,7 +10,11 @@ export function withHarvest() {
       name: 'harvest',
       model: {
         contact: {
-          harvestUpdate<T>(this: T, data: Contact, contact: HarvestContact) {
+          harvestUpdate<T>(
+            this: T,
+            data: Pick<Contact, 'id'>,
+            contact: HarvestContact,
+          ) {
             const delegate = this as Prisma.ContactDelegate;
 
             return delegate.update({
@@ -42,14 +46,6 @@ export function withHarvest() {
           },
         },
         project: {
-          async harvestLastUpdate<T>(this: T) {
-            const [{ date }] = await database.$queryRaw<[{ date?: Date }]>`
-              SELECT max(updated_at) as date FROM projects;
-            `;
-
-            return date?.toISOString();
-          },
-
           harvestUpsert<T>(this: T, project: HarvestProject) {
             const delegate = this as Prisma.ProjectDelegate;
 
