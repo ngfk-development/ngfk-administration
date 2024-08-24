@@ -64,7 +64,7 @@ module "database" {
 module "secret_database_url" {
   source      = "./secret"
   secret_id   = "DATABASE_URL"
-  secret_data = "postgres://${local.env["DATABASE_USER"]}:${local.env["DATABASE_PASS"]}@localhost/${local.env["DATABASE_NAME"]}?host=/cloudsql/${module.database.connection_name}"
+  secret_data = "postgres://${local.env["DATABASE_USER"]}:${local.env["DATABASE_PASS"]}@localhost/${local.env["DATABASE_NAME"]}?host=/cloudsql/${module.database.connection_name}&connection_limit=1"
   region      = local.region
 }
 
