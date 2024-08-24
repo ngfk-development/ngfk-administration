@@ -8,9 +8,9 @@ export default fastifyPlugin(async (app, options) => {
       const event = req.body as MoneybirdEvent;
       await app.moneybird.handleEvent(event);
 
-      return reply.status(200);
+      return reply.status(200).send();
     } catch {
-      return reply.status(500);
+      return reply.status(500).send();
     }
   });
 });
