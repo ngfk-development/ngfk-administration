@@ -28,6 +28,7 @@ services:
       - |
         npm i -g bun@1.1.24
         bun install
+        bun run db:migrate
         bun run db:push
         bun run serve
 
