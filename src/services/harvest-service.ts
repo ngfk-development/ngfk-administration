@@ -66,40 +66,36 @@ export class HarvestService {
 
   async syncContacts() {
     for await (const contact of this.contactsGet()) {
-      await this.#database.$transaction(async (tx) => {
-        const data = await tx.contact.findFirst({
-          where: {
-            customer: { harvest_id: contact.client.id },
-            first_name: contact.first_name,
-            last_name: contact.last_name,
-          },
-        });
-
-        if (!data) return;
-        if (
-          !data.harvest_id ||
-          data.updated_at.getTime() < new Date(contact.update_at).getTime()
-        ) {
-          await tx.contact.harvestUpdate(data, contact);
-        }
+      const data = await this.#database.contact.findFirst({
+        where: {
+          customer: { harvest_id: contact.client.id },
+          first_name: contact.first_name,
+          last_name: contact.last_name,
+        },
       });
+
+      if (!data) return;
+      if (
+        !data.harvest_id ||
+        data.updated_at.getTime() < new Date(contact.update_at).getTime()
+      ) {
+        await this.#database.contact.harvestUpdate(data, contact);
+      }
     }
   }
 
   async syncProjects() {
     for await (const project of this.projectsGet()) {
-      await this.#database.$transaction(async (tx) => {
-        const data = await tx.project.findUnique({
-          where: { harvest_id: project.id },
-        });
-
-        if (
-          !data ||
-          data.updated_at.getTime() < new Date(project.updated_at).getTime()
-        ) {
-          await tx.project.harvestUpsert(project);
-        }
+      const data = await this.#database.project.findUnique({
+        where: { harvest_id: project.id },
       });
+
+      if (
+        !data ||
+        data.updated_at.getTime() < new Date(project.updated_at).getTime()
+      ) {
+        await this.#database.project.harvestUpsert(project);
+      }
     }
   }
 
@@ -108,13 +104,11 @@ export class HarvestService {
       const match = task.name.match(/^([0-9A-Z]+-[0-9]+) (.*)$/);
       if (!match) continue;
 
-      await this.#database.$transaction(async (tx) => {
-        const data = await tx.epic.findUnique({
-          where: { code: match[1] },
-        });
-
-        if (data) await tx.epic.harvestUpdate(data, task);
+      const data = await this.#database.epic.findUnique({
+        where: { code: match[1] },
       });
+
+      if (data) await this.#database.epic.harvestUpdate(data, task);
     }
   }
 
