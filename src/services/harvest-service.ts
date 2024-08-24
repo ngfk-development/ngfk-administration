@@ -1,6 +1,6 @@
 import querystring from 'node:querystring';
 
-import { Contact, Customer, Service } from '@prisma/client';
+import { Contact, Customer, Epic, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
@@ -51,6 +51,17 @@ export class HarvestService {
     this.#database.contact.subscribe('delete', (data) => {
       this.contactsDelete(data);
     });
+
+    this.#database.epic.subscribe('upsert', (data) => {
+      if (data.updated_origin === Service.HARVEST) return;
+
+      if (!data.harvest_id) this.tasksPost(data);
+      else this.tasksPatch(data);
+    });
+
+    this.#database.epic.subscribe('delete', (data) => {
+      this.tasksDelete(data);
+    });
   }
 
   async syncContacts() {
@@ -67,7 +78,7 @@ export class HarvestService {
         if (!data) return;
         if (
           !data.harvest_id ||
-          data.updated_at.getDate() < new Date(contact.update_at).getDate()
+          data.updated_at.getTime() < new Date(contact.update_at).getTime()
         ) {
           await tx.contact.harvestUpdate(data, contact);
         }
@@ -84,7 +95,7 @@ export class HarvestService {
 
         if (
           !data ||
-          data.updated_at.getDate() < new Date(project.updated_at).getDate()
+          data.updated_at.getTime() < new Date(project.updated_at).getTime()
         ) {
           await tx.project.harvestUpsert(project);
         }
@@ -196,10 +207,37 @@ export class HarvestService {
     );
   }
 
+  async tasksPost(data: Epic) {
+    const task = await this.#fetch<HarvestTask>('POST', '/tasks', {
+      params: {
+        name: `${data.code} ${data.title}`,
+        is_active: !data.archived,
+      },
+    });
+
+    await this.#database.epic.harvestUpdate(data, task);
+  }
+
   async *tasksGet() {
     yield* this.#iterate<'tasks', HarvestTask>('GET', '/tasks', 'tasks', {
       params: { per_page: 2000 },
     });
+  }
+
+  async tasksPatch(data: Epic) {
+    if (!data.harvest_id) return;
+
+    await this.#fetch('PATCH', `/tasks/${data.harvest_id}`, {
+      params: {
+        name: `${data.code} ${data.title}`,
+        is_active: !data.archived,
+      },
+    });
+  }
+
+  async tasksDelete(data: Epic) {
+    if (!data.harvest_id) return;
+    await this.#fetch('DELETE', `/tasks/${data.harvest_id}`);
   }
 
   async *#iterate<K extends string, T = unknown>(

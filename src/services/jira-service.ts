@@ -63,7 +63,7 @@ export class JiraService {
 
       if (
         !data ||
-        data.updated_at.getDate() < new Date(epic.fields.updated).getDate()
+        data.updated_at.getTime() < new Date(epic.fields.updated).getTime()
       ) {
         await this.#database.epic.jiraUpsert(epic);
       }
