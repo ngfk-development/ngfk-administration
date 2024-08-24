@@ -43,6 +43,7 @@ export default fastifyPlugin<Options>(async (app, options) => {
     await moneybird.syncProjects();
     await jira.syncProjects();
     await jira.syncEpics();
+    await harvest.syncTasks();
   }
 
   function initializeSubscriptions() {

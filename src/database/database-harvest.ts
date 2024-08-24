@@ -1,8 +1,9 @@
-import { Contact, Customer, Prisma, Service } from '@prisma/client';
+import { Contact, Customer, Epic, Prisma, Service } from '@prisma/client';
 
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestProject } from '~/types/harvest/harvest-project';
+import { HarvestTask } from '~/types/harvest/harvest-task';
 
 export function withHarvest() {
   return Prisma.defineExtension((database) =>
@@ -42,6 +43,16 @@ export function withHarvest() {
                 company_name: client.name,
                 updated_origin: Service.HARVEST,
               },
+            });
+          },
+        },
+        epic: {
+          harvestUpdate<T>(this: T, data: Pick<Epic, 'id'>, task: HarvestTask) {
+            const delegate = this as Prisma.EpicDelegate;
+
+            return delegate.update({
+              where: { id: data.id },
+              data: { harvest_id: task.id },
             });
           },
         },

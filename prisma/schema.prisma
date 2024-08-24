@@ -100,10 +100,10 @@ model Epic {
   project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
   project_id String  @db.Uuid
 
-  harvest_id String? @unique
+  harvest_id Int?    @unique
   jira_id    String? @unique
 
-  code     String
+  code     String  @unique
   title    String
   status   String
   archived Boolean

@@ -7,6 +7,7 @@ import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestProject } from '~/types/harvest/harvest-project';
 import { HarvestPaginated } from '~/types/harvest/harvest-paginated';
+import { HarvestTask } from '~/types/harvest/harvest-task';
 
 export interface HarvestServiceOptions {
   accountId: string;
@@ -87,6 +88,21 @@ export class HarvestService {
         ) {
           await tx.project.harvestUpsert(project);
         }
+      });
+    }
+  }
+
+  async syncTasks() {
+    for await (const task of this.tasksGet()) {
+      const match = task.name.match(/^([0-9A-Z]+-[0-9]+) (.*)$/);
+      if (!match) continue;
+
+      await this.#database.$transaction(async (tx) => {
+        const data = await tx.epic.findUnique({
+          where: { code: match[1] },
+        });
+
+        if (data) await tx.epic.harvestUpdate(data, task);
       });
     }
   }
@@ -178,6 +194,12 @@ export class HarvestService {
       'projects',
       { params: { per_page: 2000 } },
     );
+  }
+
+  async *tasksGet() {
+    yield* this.#iterate<'tasks', HarvestTask>('GET', '/tasks', 'tasks', {
+      params: { per_page: 2000 },
+    });
   }
 
   async *#iterate<K extends string, T = unknown>(
