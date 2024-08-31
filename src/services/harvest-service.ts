@@ -1,6 +1,6 @@
 import querystring from 'node:querystring';
 
-import { Contact, Customer, Epic, Service } from '@prisma/client';
+import { Contact, Customer, Epic, Project, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
 import { HarvestClient } from '~/types/harvest/harvest-client';
@@ -9,6 +9,7 @@ import { HarvestPaginated } from '~/types/harvest/harvest-paginated';
 import { HarvestProject } from '~/types/harvest/harvest-project';
 import { HarvestTask } from '~/types/harvest/harvest-task';
 import { HarvestTaskAssignment } from '~/types/harvest/harvest-task-assignment';
+import { JiraIssue } from '~/types/jira/jira-issue';
 
 export interface HarvestServiceOptions {
   accountId: string;
@@ -127,6 +128,21 @@ export class HarvestService {
         });
       }
     }
+  }
+
+  async startTimer(project: Project, epic: Epic, issue: JiraIssue) {
+    await this.#fetch('POST', '/time_entries', {
+      params: {
+        'project_id': project.harvest_id,
+        'task_id': epic.harvest_id,
+        'spent_date': new Date().toISOString().slice(0, 10),
+        'notes': `${issue.key}: ${issue.fields.summary}`,
+        'external_reference[id]': issue.id,
+        'external_reference[group_id]': epic.jira_id,
+        'external_reference[account_id]': process.env.JIRA_LEAD_ACCOUNT_ID,
+        'external_reference[permalink]': `https://ngfk.atlassian.net/browse/${issue.key}`,
+      },
+    });
   }
 
   async clientsDelete(data: Customer) {

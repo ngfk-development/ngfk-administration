@@ -3,6 +3,7 @@ declare namespace NodeJS {
     HARVEST_ACCOUNT_ID: string;
     HARVEST_ENDPOINT: string;
     HARVEST_TOKEN: string;
+    HARVEST_START_TIMER_SECRET: string;
     JIRA_ENDPOINT: string;
     JIRA_LEAD_ACCOUNT_ID: string;
     JIRA_TOKEN: string;

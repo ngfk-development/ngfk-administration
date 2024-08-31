@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import fastifyCron from 'fastify-cron';
 
+import harvestTimer from '~/controllers/api/harvest-timer';
 import moneybirdWebhook from '~/controllers/moneybird-webhook';
 import database from '~/database/database';
 import services from '~/services/services';
@@ -49,6 +50,7 @@ app
       webhookToken: process.env.MONEYBIRD_WEBHOOK_TOKEN,
     },
   })
+  .register(harvestTimer)
   .register(moneybirdWebhook)
   .get('/live', async () => ({ success: true }))
   .listen({ host: '0.0.0.0', port: parseInt(PORT, 10) });

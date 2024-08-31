@@ -8,6 +8,7 @@ export interface JiraIssue {
   key: string;
   fields: {
     issuetype: JiraIssueType;
+    parent?: Pick<JiraIssue, 'id' | 'key'>;
     project: JiraProject;
     created: string;
     updated: string;
