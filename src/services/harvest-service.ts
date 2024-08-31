@@ -1,13 +1,15 @@
 import querystring from 'node:querystring';
 
-import { Contact, Customer, Epic, Service } from '@prisma/client';
+import { Contact, Customer, Epic, Project, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
-import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestClient } from '~/types/harvest/harvest-client';
-import { HarvestProject } from '~/types/harvest/harvest-project';
+import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestPaginated } from '~/types/harvest/harvest-paginated';
+import { HarvestProject } from '~/types/harvest/harvest-project';
 import { HarvestTask } from '~/types/harvest/harvest-task';
+import { HarvestTaskAssignment } from '~/types/harvest/harvest-task-assignment';
+import { JiraIssue } from '~/types/jira/jira-issue';
 
 export interface HarvestServiceOptions {
   accountId: string;
@@ -110,6 +112,37 @@ export class HarvestService {
 
       if (data) await this.#database.epic.harvestUpdate(data, task);
     }
+
+    for await (const taskAssignment of this.taskAssignmentGet()) {
+      const data = await this.#database.epic.findFirst({
+        where: {
+          harvest_id: taskAssignment.task.id,
+          harvest_assignment_id: null,
+        },
+      });
+
+      if (data) {
+        await this.#database.epic.update({
+          where: { id: data.id },
+          data: { harvest_assignment_id: taskAssignment.id },
+        });
+      }
+    }
+  }
+
+  async startTimer(project: Project, epic: Epic, issue: JiraIssue) {
+    await this.#fetch('POST', '/time_entries', {
+      params: {
+        'project_id': project.harvest_id,
+        'task_id': epic.harvest_id,
+        'spent_date': new Date().toISOString().slice(0, 10),
+        'notes': `${issue.key}: ${issue.fields.summary}`,
+        'external_reference[id]': issue.id,
+        'external_reference[group_id]': epic.jira_id,
+        'external_reference[account_id]': process.env.JIRA_LEAD_ACCOUNT_ID,
+        'external_reference[permalink]': `https://ngfk.atlassian.net/browse/${issue.key}`,
+      },
+    });
   }
 
   async clientsDelete(data: Customer) {
@@ -202,6 +235,10 @@ export class HarvestService {
   }
 
   async tasksPost(data: Epic) {
+    const project = await this.#database.project.findUnique({
+      where: { id: data.project_id },
+    });
+
     const task = await this.#fetch<HarvestTask>('POST', '/tasks', {
       params: {
         name: `${data.code} ${data.title}`,
@@ -209,7 +246,22 @@ export class HarvestService {
       },
     });
 
-    await this.#database.epic.harvestUpdate(data, task);
+    const assignment = await this.#fetch<HarvestTaskAssignment>(
+      'POST',
+      `/projects/${project?.harvest_id!}/task_assignments`,
+      { params: { task_id: task.id } },
+    );
+
+    await this.#database.epic.harvestUpdate(data, task, assignment);
+  }
+
+  async *taskAssignmentGet() {
+    yield* this.#iterate<'task_assignments', HarvestTaskAssignment>(
+      'GET',
+      '/task_assignments',
+      'task_assignments',
+      { params: { per_page: 2000 } },
+    );
   }
 
   async *tasksGet() {
