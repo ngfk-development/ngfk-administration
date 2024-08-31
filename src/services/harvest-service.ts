@@ -3,11 +3,12 @@ import querystring from 'node:querystring';
 import { Contact, Customer, Epic, Service } from '@prisma/client';
 
 import { Database } from '~/types/database';
-import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestClient } from '~/types/harvest/harvest-client';
-import { HarvestProject } from '~/types/harvest/harvest-project';
+import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestPaginated } from '~/types/harvest/harvest-paginated';
+import { HarvestProject } from '~/types/harvest/harvest-project';
 import { HarvestTask } from '~/types/harvest/harvest-task';
+import { HarvestTaskAssignment } from '~/types/harvest/harvest-task-assignment';
 
 export interface HarvestServiceOptions {
   accountId: string;
@@ -110,6 +111,22 @@ export class HarvestService {
 
       if (data) await this.#database.epic.harvestUpdate(data, task);
     }
+
+    for await (const taskAssignment of this.taskAssignmentGet()) {
+      const data = await this.#database.epic.findFirst({
+        where: {
+          harvest_id: taskAssignment.task.id,
+          harvest_assignment_id: null,
+        },
+      });
+
+      if (data) {
+        await this.#database.epic.update({
+          where: { id: data.id },
+          data: { harvest_assignment_id: taskAssignment.id },
+        });
+      }
+    }
   }
 
   async clientsDelete(data: Customer) {
@@ -210,6 +227,15 @@ export class HarvestService {
     });
 
     await this.#database.epic.harvestUpdate(data, task);
+  }
+
+  async *taskAssignmentGet() {
+    yield* this.#iterate<'task_assignments', HarvestTaskAssignment>(
+      'GET',
+      '/task_assignments',
+      'task_assignments',
+      { params: { per_page: 2000 } },
+    );
   }
 
   async *tasksGet() {
