@@ -19,5 +19,11 @@ declare module 'fastify' {
 }
 
 export default fastifyPlugin(async (app) => {
+  await database.$connect();
+
   app.decorate('database', database);
+
+  app.addHook('onClose', async () => {
+    await database.$disconnect();
+  });
 });
