@@ -3,6 +3,7 @@ import { Contact, Customer, Epic, Prisma, Service } from '@prisma/client';
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
 import { HarvestProject } from '~/types/harvest/harvest-project';
+import { HarvestTaskAssignment } from '~/types/harvest/harvest-task-assignment';
 import { HarvestTask } from '~/types/harvest/harvest-task';
 
 export function withHarvest() {
@@ -47,12 +48,20 @@ export function withHarvest() {
           },
         },
         epic: {
-          harvestUpdate<T>(this: T, data: Pick<Epic, 'id'>, task: HarvestTask) {
+          harvestUpdate<T>(
+            this: T,
+            data: Pick<Epic, 'id'>,
+            task: HarvestTask,
+            assignment?: HarvestTaskAssignment,
+          ) {
             const delegate = this as Prisma.EpicDelegate;
 
             return delegate.update({
               where: { id: data.id },
-              data: { harvest_id: task.id },
+              data: {
+                harvest_id: task.id,
+                harvest_assignment_id: assignment?.id,
+              },
             });
           },
         },

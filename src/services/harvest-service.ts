@@ -219,6 +219,10 @@ export class HarvestService {
   }
 
   async tasksPost(data: Epic) {
+    const project = await this.#database.project.findUnique({
+      where: { id: data.project_id },
+    });
+
     const task = await this.#fetch<HarvestTask>('POST', '/tasks', {
       params: {
         name: `${data.code} ${data.title}`,
@@ -226,7 +230,13 @@ export class HarvestService {
       },
     });
 
-    await this.#database.epic.harvestUpdate(data, task);
+    const assignment = await this.#fetch<HarvestTaskAssignment>(
+      'POST',
+      `/projects/${project?.harvest_id!}/task_assignments`,
+      { params: { task_id: task.id } },
+    );
+
+    await this.#database.epic.harvestUpdate(data, task, assignment);
   }
 
   async *taskAssignmentGet() {
