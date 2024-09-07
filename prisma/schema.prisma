@@ -30,9 +30,9 @@ model Customer {
   chamber_of_commerce_number String?
   tax_number                 String?
 
-  created_origin Service
+  created_origin Service  @default(MONEYBIRD)
   created_at     DateTime @default(now())
-  updated_origin Service
+  updated_origin Service  @default(MONEYBIRD)
   updated_at     DateTime @updatedAt
 
   contacts Contact[]
@@ -58,9 +58,9 @@ model Contact {
   email      String?
   title      String?
 
-  created_origin Service
+  created_origin Service  @default(MONEYBIRD)
   created_at     DateTime @default(now())
-  updated_origin Service
+  updated_origin Service  @default(MONEYBIRD)
   updated_at     DateTime @updatedAt
 
   @@index([moneybird_version, first_name, last_name, email])
@@ -83,9 +83,9 @@ model Project {
   billable    Boolean
   hourly_rate Int
 
-  created_origin Service
+  created_origin Service  @default(HARVEST)
   created_at     DateTime @default(now())
-  updated_origin Service
+  updated_origin Service  @default(HARVEST)
   updated_at     DateTime @updatedAt
 
   epics Epic[]
@@ -109,9 +109,9 @@ model Epic {
   status   String
   archived Boolean
 
-  created_origin Service
+  created_origin Service  @default(JIRA)
   created_at     DateTime @default(now())
-  updated_origin Service
+  updated_origin Service  @default(JIRA)
   updated_at     DateTime @updatedAt
 
   @@map("epics")

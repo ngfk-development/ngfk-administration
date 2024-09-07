@@ -2,6 +2,7 @@ import querystring from 'node:querystring';
 
 import { Contact, Customer, Epic, Project, Service } from '@prisma/client';
 
+import { withService } from '~/database/plugins/with-service';
 import { Database } from '~/types/database';
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
@@ -26,7 +27,7 @@ export class HarvestService {
 
   constructor(options: HarvestServiceOptions) {
     this.#accountId = options.accountId;
-    this.#database = options.database;
+    this.#database = options.database.$extends(withService(Service.HARVEST));
     this.#endpoint = options.endpoint;
     this.#token = options.token;
   }

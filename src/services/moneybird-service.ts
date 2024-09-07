@@ -2,12 +2,14 @@ import querystring from 'node:querystring';
 
 import { Customer, Project, Service } from '@prisma/client';
 
+import { withService } from '~/database/plugins/with-service';
 import { Database } from '~/types/database';
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
 import { MoneybirdEvent } from '~/types/moneybird/moneybird-event';
 import { MoneybirdProject } from '~/types/moneybird/moneybird-project';
 import { MoneybirdSync } from '~/types/moneybird/moneybird-sync';
 import { iterateChunks } from '~/utils/iterate-chunks';
+import { withMoneybird } from '~/database/plugins/with-moneybird';
 
 export interface MoneybirdServiceOptions {
   database: Database;
@@ -23,7 +25,7 @@ export class MoneybirdService {
   #webhookToken: string;
 
   constructor(options: MoneybirdServiceOptions) {
-    this.#database = options.database;
+    this.#database = options.database.$extends(withService(Service.MONEYBIRD));
     this.#endpoint = options.endpoint;
     this.#token = options.token;
     this.#webhookToken = options.webhookToken;

@@ -1,4 +1,4 @@
-import { Customer, Prisma, Project, Service } from '@prisma/client';
+import { Customer, Prisma, Project } from '@prisma/client';
 
 import { MoneybirdContact } from '~/types/moneybird/moneybird-contact';
 import { MoneybirdContactPerson } from '~/types/moneybird/moneybird-contact-person';
@@ -19,7 +19,7 @@ export function withMoneybird() {
           moneybirdUpsert<T>(this: T, person: MoneybirdContactPerson) {
             const delegate = this as Prisma.ContactDelegate;
 
-            const data: Omit<Prisma.ContactCreateInput, 'created_origin'> = {
+            const data: Prisma.ContactCreateInput = {
               moneybird_id: person.id,
               moneybird_version: person.version,
 
@@ -29,13 +29,12 @@ export function withMoneybird() {
               email: person.email,
               title: person.department,
 
-              updated_origin: Service.MONEYBIRD,
               customer: { connect: { moneybird_id: person.contact_id } },
             };
 
             return delegate.upsert({
               where: { moneybird_id: person.id },
-              create: { ...data, created_origin: Service.MONEYBIRD },
+              create: data,
               update: data,
             });
           },
@@ -72,7 +71,7 @@ export function withMoneybird() {
               process.env.MONEYBIRD_CUSTOM_FIELD_HARVEST_ID,
             );
 
-            const data: Omit<Prisma.CustomerCreateInput, 'created_origin'> = {
+            const data: Prisma.CustomerCreateInput = {
               harvest_id: harvestField
                 ? parseInt(harvestField.value)
                 : undefined,
@@ -87,12 +86,11 @@ export function withMoneybird() {
               country: contact.country,
               chamber_of_commerce_number: contact.chamber_of_commerce,
               tax_number: contact.tax_number,
-              updated_origin: Service.MONEYBIRD,
             };
 
             return delegate.upsert({
               where: { moneybird_id: contact.id },
-              create: { ...data, created_origin: Service.MONEYBIRD },
+              create: data,
               update: data,
             });
           },
@@ -107,10 +105,7 @@ export function withMoneybird() {
 
             return delegate.update({
               where: { id: data.id },
-              data: {
-                moneybird_id: project.id,
-                updated_origin: Service.MONEYBIRD,
-              },
+              data: { moneybird_id: project.id },
             });
           },
         },

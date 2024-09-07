@@ -2,6 +2,7 @@ import querystring from 'node:querystring';
 
 import { Project, Service } from '@prisma/client';
 
+import { withService } from '~/database/plugins/with-service';
 import { Database } from '~/types/database';
 import {
   JiraPaginatedIssues,
@@ -25,7 +26,7 @@ export class JiraService {
   #username: string;
 
   constructor(options: JiraServiceOptions) {
-    this.#database = options.database;
+    this.#database = options.database.$extends(withService(Service.JIRA));
     this.#endpoint = options.endpoint;
     this.#leadAccountId = options.leadAccountId;
     this.#token = options.token;

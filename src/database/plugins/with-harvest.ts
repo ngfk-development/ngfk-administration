@@ -1,4 +1,4 @@
-import { Contact, Customer, Epic, Prisma, Service } from '@prisma/client';
+import { Contact, Customer, Epic, Prisma } from '@prisma/client';
 
 import { HarvestClient } from '~/types/harvest/harvest-client';
 import { HarvestContact } from '~/types/harvest/harvest-contact';
@@ -28,7 +28,6 @@ export function withHarvest() {
                 phone: contact.phone_mobile,
                 email: contact.email,
                 title: contact.title,
-                updated_origin: Service.HARVEST,
               },
             });
           },
@@ -39,11 +38,7 @@ export function withHarvest() {
 
             return delegate.update({
               where: { id: data.id },
-              data: {
-                harvest_id: client.id,
-                company_name: client.name,
-                updated_origin: Service.HARVEST,
-              },
+              data: { harvest_id: client.id, company_name: client.name },
             });
           },
         },
@@ -69,20 +64,19 @@ export function withHarvest() {
           harvestUpsert<T>(this: T, project: HarvestProject) {
             const delegate = this as Prisma.ProjectDelegate;
 
-            const data: Omit<Prisma.ProjectCreateInput, 'created_origin'> = {
+            const data: Prisma.ProjectCreateInput = {
               harvest_id: project.id,
               name: project.name,
               code: project.code,
               active: project.is_active,
               billable: project.is_billable,
               hourly_rate: project.hourly_rate,
-              updated_origin: Service.HARVEST,
               customer: { connect: { harvest_id: project.client.id } },
             };
 
             return delegate.upsert({
               where: { harvest_id: project.id },
-              create: { ...data, created_origin: Service.HARVEST },
+              create: data,
               update: data,
             });
           },
