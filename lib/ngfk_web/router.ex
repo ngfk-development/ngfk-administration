@@ -1,12 +1,22 @@
 defmodule NgfkWeb.Router do
   use NgfkWeb, :router
 
+  alias NgfkWeb.Plugs.SharedSecret
+
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  pipeline :shared_secret do
+    plug SharedSecret
+  end
+
   scope "/api", NgfkWeb do
-    pipe_through :api
+    pipe_through [:api, :shared_secret]
+
+    scope "/harvest" do
+      post("/timer", HarvestController, :timer)
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -18,6 +18,18 @@ defmodule Ngfk.Services.Harvest do
   alias Ngfk.Users.User
   alias Ngfk.Users.UserSearch
 
+  def start_timer(%{user: user, project: project, epic: epic, issue: %{jira_id: _, code: _, title: _} = issue}) do
+    with {:ok, [%User{} = user]} <- UserSearch.search(user),
+         {:ok, [%Project{} = project]} <- ProjectSearch.search(project),
+         {:ok, [%ProjectEpic{} = epic]} <- ProjectEpicSearch.search(epic) do
+      start_timer(user, project, epic, issue)
+    end
+  end
+
+  def start_timer(%User{} = user, %Project{} = project, %ProjectEpic{} = epic, %{jira_id: _, code: _, title: _} = issue) do
+    HarvestApi.time_entries_post(user, project, epic, issue)
+  end
+
   def sync_companies do
     [
       key: :customer_number,

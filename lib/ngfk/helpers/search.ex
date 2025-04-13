@@ -29,7 +29,7 @@ defmodule Ngfk.Helpers.Search do
       :empty -> where(query, ^dynamic([r], is_nil(field(r, ^key))))
       :not_empty -> where(query, ^dynamic([r], not is_nil(field(r, ^key))))
       value when is_list(value) -> where(query, ^dynamic([r], field(r, ^key) in ^value))
-      value when not is_nil(value) -> where(query, ^dynamic([r], field(r, ^key) == ^value))
+      value when not is_nil(value) -> query |> where(^dynamic([r], field(r, ^key) == ^value)) |> limit(1)
       _ -> query
     end
   end

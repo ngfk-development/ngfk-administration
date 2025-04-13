@@ -13,12 +13,13 @@ config :ngfk, Ngfk.Repo,
   log: false
 
 config :ngfk, NgfkWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "krVJhQxKDzOKtZC1LkJBBMcGOC5q0fYcacXoo6RwlA0/W4FqhyEdyRpBmjAWKUjU",
-  watchers: []
+  watchers: [],
+  shared_secret: System.get_env("NGFK_SHARED_SECRET")
 
 config :ngfk, :harvest,
   endpoint: System.get_env("HARVEST_ENDPOINT"),

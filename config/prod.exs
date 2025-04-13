@@ -2,6 +2,8 @@ import Config
 
 config :logger, level: :info
 
+config :ngfk, NgfkWeb.Endpoint, shared_secret: System.get_env("NGFK_SHARED_SECRET")
+
 config :ngfk, :harvest,
   endpoint: System.get_env("HARVEST_ENDPOINT"),
   token: System.get_env("HARVEST_TOKEN"),

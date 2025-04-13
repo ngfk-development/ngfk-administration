@@ -7,8 +7,10 @@ defmodule Ngfk.Services.Harvest.HarvestApi do
 
   alias Ngfk.Companies.Company
   alias Ngfk.Companies.CompanyContact
+  alias Ngfk.Projects.Project
   alias Ngfk.Projects.ProjectEpic
   alias Ngfk.Services.Harvest.HarvestParser
+  alias Ngfk.Users.User
 
   @per_page 2000
 
@@ -178,6 +180,32 @@ defmodule Ngfk.Services.Harvest.HarvestApi do
     |> fetch_paginated("time_entries")
     |> Enum.map(&HarvestParser.parse_time_entry/1)
     |> then(&{:ok, &1})
+  end
+
+  def time_entries_post(
+        %User{} = user,
+        %Project{} = project,
+        %ProjectEpic{} = epic,
+        %{jira_id: _, code: _, title: _} = issue,
+        opts \\ []
+      ) do
+    data = %{
+      user_id: user.harvest_id,
+      project_id: project.harvest_id,
+      task_id: epic.harvest_id,
+      spent_date: opts |> Keyword.get(:date, Date.utc_today()) |> Calendar.strftime("%Y-%m-%d"),
+      notes: "#{issue.code}: #{issue.title}",
+      external_reference: %{
+        id: issue.jira_id,
+        group_id: epic.jira_id,
+        account_id: user.jira_id,
+        permalink: "https://ngfk.atlassian.net/browse/#{issue.code}"
+      }
+    }
+
+    case fetch({:post, "/time_entries", json: data}) do
+      {:ok, body} -> {:ok, HarvestParser.parse_time_entry(body)}
+    end
   end
 
   def users_get(opts \\ []) do
