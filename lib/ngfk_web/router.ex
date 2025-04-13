@@ -18,6 +18,10 @@ defmodule NgfkWeb.Router do
       post "/timer", HarvestController, :timer
     end
 
+    scope "/jira" do
+      post "/hook", JiraController, :hook
+    end
+
     scope "/moneybird" do
       post "/hook", MoneybirdController, :hook
     end
