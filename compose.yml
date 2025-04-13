@@ -1,0 +1,32 @@
+services:
+  database:
+    image: postgres:17.4
+    environment:
+      POSTGRES_DB: ngfk_administration
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - database:/var/lib/postgresql/data
+
+  server:
+    image: elixir:1.18.3
+    depends_on:
+      - database
+    env_file: .env
+    environment:
+      MIX_ENV: docker
+    ports:
+      - 4000:4000
+    volumes:
+      - .:/app
+    working_dir: /app
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mix setup
+        mix phx.server
+
+volumes:
+  database:
