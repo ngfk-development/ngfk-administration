@@ -30,6 +30,12 @@ defmodule Ngfk.Services.Harvest do
     end
   end
 
+  def cleanup_project_epic(%ProjectEpic{} = epic) do
+    with {:ok, _} <- HarvestApi.tasks_delete(epic) do
+      {:ok, epic}
+    end
+  end
+
   def start_timer(%{user: user, project: project, epic: epic, issue: %{jira_id: _, code: _, title: _} = issue}) do
     with {:ok, [%User{} = user]} <- UserSearch.search(user),
          {:ok, [%Project{} = project]} <- ProjectSearch.search(project),

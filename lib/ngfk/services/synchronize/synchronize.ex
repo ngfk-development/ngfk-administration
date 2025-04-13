@@ -4,6 +4,8 @@ defmodule Ngfk.Services.Synchronize do
   alias Ngfk.Companies.CompanyContact
   alias Ngfk.Companies.CompanyContactSearch
   alias Ngfk.Companies.CompanySearch
+  alias Ngfk.Projects.ProjectEpic
+  alias Ngfk.Projects.ProjectEpicSearch
   alias Ngfk.Repo
   alias Ngfk.Services.Harvest
   alias Ngfk.Services.Jira
@@ -20,6 +22,13 @@ defmodule Ngfk.Services.Synchronize do
     with {:ok, [%CompanyContact{} = contact]} <- CompanyContactSearch.search(moneybird_id: id),
          {:ok, %CompanyContact{} = contact} <- Harvest.cleanup_company_contact(contact) do
       Repo.delete(contact)
+    end
+  end
+
+  def cleanup_project_epic(id) do
+    with {:ok, [%ProjectEpic{} = epic]} <- ProjectEpicSearch.search(jira_id: id),
+         {:ok, %ProjectEpic{} = epic} <- Harvest.cleanup_project_epic(epic) do
+      Repo.delete(epic)
     end
   end
 

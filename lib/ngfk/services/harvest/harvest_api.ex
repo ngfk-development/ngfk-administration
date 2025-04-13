@@ -182,6 +182,12 @@ defmodule Ngfk.Services.Harvest.HarvestApi do
     end
   end
 
+  def tasks_delete(%ProjectEpic{} = epic) when not is_nil(epic.harvest_id) do
+    case fetch({:delete, "/tasks/#{epic.harvest_id}", []}) do
+      {:ok, _} -> {:ok, epic}
+    end
+  end
+
   def time_entries_get(opts \\ []) do
     params = %{
       per_page: opts[:per_page] || @per_page,
