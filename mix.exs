@@ -42,6 +42,7 @@ defmodule Ngfk.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:phoenix, "~> 1.7.21"},
       {:postgrex, ">= 0.0.0"},
+      {:quantum, "~> 3.0"},
       {:req, "~> 0.5.0"},
       {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
       {:swoosh, "~> 1.5"},
