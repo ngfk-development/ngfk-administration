@@ -11,35 +11,49 @@ defmodule Ngfk.Services.Moneybird do
   alias Ngfk.Projects.Project
   alias Ngfk.Projects.ProjectSearch
   alias Ngfk.Services.Moneybird.MoneybirdApi
+  alias Ngfk.Services.Moneybird.MoneybirdParser
   alias Ngfk.TimeEntries.TimeEntry
   alias Ngfk.TimeEntries.TimeEntrySearch
   alias Ngfk.Users.User
   alias Ngfk.Users.UserSearch
 
-  def sync_companies do
+  def insert_contact_person(entity) do
+    attrs = MoneybirdParser.parse_contact_person(entity)
+
+    with {:ok, [company]} <- CompanySearch.search(moneybird_id: attrs.company.moneybird_id) do
+      attrs
+      |> Map.put(:company_id, company.id)
+      |> CompanyContact.moneybird_insert_changeset()
+      |> Repo.insert()
+    end
+  end
+
+  def sync_companies(opts \\ []) do
     [
       key: :moneybird_id,
       changeset: &Company.moneybird_changeset/2,
       search: &CompanySearch.search/1,
       search_args: [preload: :contacts]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_read(fn -> MoneybirdApi.contacts_filter_get(updated_after: get_sync_date(Company)) end)
     |> Sync.execute()
   end
 
-  def sync_company_contacts do
+  def sync_company_contacts(opts \\ []) do
     [
       key: :moneybird_id,
       changeset: &CompanyContact.moneybird_changeset/2,
       search: &CompanyContactSearch.search/1
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_read(&company_contacts_read/0)
     |> Sync.execute()
   end
 
-  def sync_projects do
+  def sync_projects(opts \\ []) do
     [
       key: :code,
       changeset: &Project.moneybird_changeset/2,
@@ -53,6 +67,7 @@ defmodule Ngfk.Services.Moneybird do
         query: &where(&1, [p], not is_nil(p.code) and p.moneybird_sync_at < p.harvest_sync_at)
       ]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_create(&MoneybirdApi.projects_post/1)
     |> Sync.action_read(&MoneybirdApi.projects_get/0)
@@ -60,7 +75,7 @@ defmodule Ngfk.Services.Moneybird do
     |> Sync.execute()
   end
 
-  def sync_time_entries do
+  def sync_time_entries(opts \\ []) do
     [
       key: :hash,
       changeset: &TimeEntry.moneybird_changeset/2,
@@ -76,6 +91,7 @@ defmodule Ngfk.Services.Moneybird do
         query: &where(&1, [e], e.moneybird_sync_at < e.harvest_sync_at)
       ]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_create(&time_entries_create/1)
     |> Sync.action_read(&time_entries_read/0)
@@ -83,12 +99,13 @@ defmodule Ngfk.Services.Moneybird do
     |> Sync.execute()
   end
 
-  def sync_users do
+  def sync_users(opts \\ []) do
     [
       key: :email,
       changeset: &User.moneybird_changeset/2,
       search: &UserSearch.search/1
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_read(&MoneybirdApi.users_get/0)
     |> Sync.execute()

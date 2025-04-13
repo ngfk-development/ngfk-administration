@@ -3,8 +3,11 @@ defmodule Ngfk.Helpers.SyncContext do
   alias Ecto.Changeset
   alias Ngfk.Helpers.SyncError
 
+  @actions [:create, :read, :update]
+
   defstruct key: :id,
             changeset: nil,
+            only: @actions,
             search: nil,
             search_args: [],
             search_args_create: [],
@@ -15,14 +18,13 @@ defmodule Ngfk.Helpers.SyncContext do
             state: %{create: [], read: [], update: []},
             error: nil
 
-  @actions [:create, :read, :update]
-
   @type state_update_queue :: list(String.t())
   @type state(data_type) :: %{create: list(data_type), read: list(data_type), update: list(data_type)}
 
   @type t(data_type) :: %__MODULE__{
           key: atom() | nil,
           changeset: (struct(), any() -> Changeset.t(data_type)),
+          only: list(atom()),
           search: (keyword() -> {:ok, list(data_type)}),
           search_args: keyword(),
           search_args_create: keyword(),
@@ -36,6 +38,7 @@ defmodule Ngfk.Helpers.SyncContext do
   @type opts(data_type) :: [
           key: atom() | nil,
           changeset: (struct(), any() -> Changeset.t(data_type)),
+          only: list(atom()),
           search: (keyword() -> {:ok, list(data_type)}),
           search_args: keyword(),
           search_args_create: keyword(),
@@ -58,6 +61,7 @@ defmodule Ngfk.Helpers.SyncContext do
     |> new()
     |> continue_with_option(context, opts, :key)
     |> continue_with_option(context, opts, :changeset)
+    |> continue_with_option(context, opts, :only)
     |> continue_with_option(context, opts, :search)
     |> continue_with_option(context, opts, :search_args)
     |> continue_with_option(context, opts, :search_args_create)
@@ -78,7 +82,7 @@ defmodule Ngfk.Helpers.SyncContext do
   def dequeue_updates(%__MODULE__{} = context), do: Map.put(context, :state_update_queue, [])
 
   def has_action(%__MODULE__{} = context, action) when action in @actions,
-    do: Enum.find(context.state_actions, &(elem(&1, 0) == action)) != nil
+    do: Enum.member?(context.only, action) and Enum.find(context.state_actions, &(elem(&1, 0) == action)) != nil
 
   defp continue_with_option(%__MODULE__{} = current, %__MODULE__{} = previous, opts, key),
     do: Map.put(current, key, Keyword.get(opts, key, Map.get(previous, key)))

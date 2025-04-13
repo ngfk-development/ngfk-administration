@@ -3,6 +3,7 @@ defmodule Ngfk.Services.Moneybird.MoneybirdParser do
 
   def parse_contact_person(person) do
     %{
+      company: %{moneybird_id: person["contact_id"]},
       moneybird_id: person["id"],
       moneybird_version: person["version"],
       first_name: person["firstname"],

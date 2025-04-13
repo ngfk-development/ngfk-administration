@@ -6,58 +6,78 @@ defmodule Ngfk.Services.Synchronize do
 
   require Logger
 
-  def sync do
-    with :ok <- sync_users(),
-         :ok <- sync_companies(),
-         :ok <- sync_company_contacts(),
-         :ok <- sync_projects(),
-         :ok <- sync_project_epics() do
-      sync_time_entries()
+  def sync(opts \\ []) do
+    with :ok <- sync_users(opts),
+         :ok <- sync_companies(opts),
+         :ok <- sync_company_contacts(opts),
+         :ok <- sync_projects(opts),
+         :ok <- sync_project_epics(opts) do
+      sync_time_entries(opts)
     end
   end
 
-  def sync_companies do
-    with {:ok, _} <- Moneybird.sync_companies(),
-         {:ok, _} <- Harvest.sync_companies() do
+  def sync_companies(opts \\ []) do
+    opts = parse_opts(opts)
+
+    with {:ok, _} <- Moneybird.sync_companies(opts.moneybird),
+         {:ok, _} <- Harvest.sync_companies(opts.harvest) do
       :ok
     end
   end
 
-  def sync_company_contacts do
-    with {:ok, _} <- Moneybird.sync_company_contacts(),
-         {:ok, _} <- Harvest.sync_company_contacts() do
+  def sync_company_contacts(opts \\ []) do
+    opts = parse_opts(opts)
+
+    with {:ok, _} <- Moneybird.sync_company_contacts(opts.moneybird),
+         {:ok, _} <- Harvest.sync_company_contacts(opts.harvest) do
       :ok
     end
   end
 
-  def sync_project_epics do
-    with {:ok, _} <- Jira.sync_project_epics(),
-         {:ok, _} <- Harvest.sync_project_epics(),
-         {:ok, _} <- Harvest.sync_project_epic_assignment() do
+  def sync_project_epics(opts \\ []) do
+    opts = parse_opts(opts)
+
+    with {:ok, _} <- Jira.sync_project_epics(opts.jira),
+         {:ok, _} <- Harvest.sync_project_epics(opts.harvest),
+         {:ok, _} <- Harvest.sync_project_epic_assignment(opts.harvest) do
       :ok
     end
   end
 
-  def sync_projects do
-    with {:ok, _} <- Harvest.sync_projects(),
-         {:ok, _} <- Moneybird.sync_projects(),
-         {:ok, _} <- Jira.sync_projects() do
+  def sync_projects(opts \\ []) do
+    opts = parse_opts(opts)
+
+    with {:ok, _} <- Harvest.sync_projects(opts.harvest),
+         {:ok, _} <- Moneybird.sync_projects(opts.moneybird),
+         {:ok, _} <- Jira.sync_projects(opts.jira) do
       :ok
     end
   end
 
-  def sync_time_entries do
-    with {:ok, _} <- Harvest.sync_time_entries(),
-         {:ok, _} <- Moneybird.sync_time_entries() do
+  def sync_time_entries(opts \\ []) do
+    opts = parse_opts(opts)
+
+    with {:ok, _} <- Harvest.sync_time_entries(opts.harvest),
+         {:ok, _} <- Moneybird.sync_time_entries(opts.moneybird) do
       :ok
     end
   end
 
-  def sync_users do
-    with {:ok, _} <- Moneybird.sync_users(),
-         {:ok, _} <- Harvest.sync_users(),
-         {:ok, _} <- Jira.sync_users() do
+  def sync_users(opts \\ []) do
+    opts = parse_opts(opts)
+
+    with {:ok, _} <- Moneybird.sync_users(opts.moneybird),
+         {:ok, _} <- Harvest.sync_users(opts.harvest),
+         {:ok, _} <- Jira.sync_users(opts.jira) do
       :ok
     end
+  end
+
+  defp parse_opts(opts) do
+    %{
+      harvest: Keyword.get(opts, :harvest, []),
+      jira: Keyword.get(opts, :jira, []),
+      moneybird: Keyword.get(opts, :moneybird, [])
+    }
   end
 end

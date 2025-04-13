@@ -38,6 +38,28 @@ defmodule Ngfk.Companies.CompanyContact do
     |> unique_constraint(:harvest_id)
   end
 
+  def moneybird_insert_changeset(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, [
+      :company_id,
+      :moneybird_id,
+      :moneybird_version,
+      :first_name,
+      :last_name,
+      :phone,
+      :email,
+      :title
+    ])
+    |> validate_required([
+      :company_id,
+      :moneybird_id,
+      :moneybird_version,
+      :email
+    ])
+    |> put_change(:moneybird_sync_at, sync_now())
+    |> unique_constraint(:moneybird_id)
+  end
+
   def moneybird_changeset(contact, attrs) do
     contact = contact || %__MODULE__{}
 

@@ -30,7 +30,7 @@ defmodule Ngfk.Services.Harvest do
     HarvestApi.time_entries_post(user, project, epic, issue)
   end
 
-  def sync_companies do
+  def sync_companies(opts \\ []) do
     [
       key: :customer_number,
       changeset: &Company.harvest_changeset/2,
@@ -39,6 +39,7 @@ defmodule Ngfk.Services.Harvest do
       search_args_create: [harvest_id: :empty],
       search_args_update: [harvest_id: :not_empty, query: &where(&1, [c], c.harvest_sync_at < c.moneybird_sync_at)]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_create(&HarvestApi.clients_post/1)
     |> Sync.action_read(fn -> HarvestApi.clients_get(updated_since: get_sync_date(Company)) end)
@@ -46,7 +47,7 @@ defmodule Ngfk.Services.Harvest do
     |> Sync.execute()
   end
 
-  def sync_company_contacts do
+  def sync_company_contacts(opts \\ []) do
     [
       key: :email,
       changeset: &CompanyContact.harvest_changeset/2,
@@ -55,6 +56,7 @@ defmodule Ngfk.Services.Harvest do
       search_args_create: [harvest_id: :empty],
       search_args_update: [harvest_id: :not_empty, query: &where(&1, [c], c.harvest_sync_at < c.moneybird_sync_at)]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_create(&HarvestApi.contacts_post/1)
     |> Sync.action_read(fn -> HarvestApi.contacts_get(updated_since: get_sync_date(CompanyContact)) end)
@@ -62,18 +64,19 @@ defmodule Ngfk.Services.Harvest do
     |> Sync.execute()
   end
 
-  def sync_projects do
+  def sync_projects(opts \\ []) do
     [
       key: :harvest_id,
       changeset: &Project.harvest_changeset/2,
       search: &ProjectSearch.search/1
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_read(&projects_read/0)
     |> Sync.execute()
   end
 
-  def sync_project_epics do
+  def sync_project_epics(opts \\ []) do
     [
       key: :code,
       changeset: &ProjectEpic.harvest_changeset/2,
@@ -81,6 +84,7 @@ defmodule Ngfk.Services.Harvest do
       search_args_create: [harvest_id: :empty],
       search_args_update: [harvest_id: :not_empty, query: &where(&1, [c], c.harvest_sync_at < c.jira_sync_at)]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_create(&HarvestApi.tasks_post/1)
     |> Sync.action_read(fn -> HarvestApi.tasks_get(updated_since: get_sync_date(ProjectEpic)) end)
@@ -88,36 +92,39 @@ defmodule Ngfk.Services.Harvest do
     |> Sync.execute()
   end
 
-  def sync_project_epic_assignment do
+  def sync_project_epic_assignment(opts \\ []) do
     [
       key: :code,
       changeset: &ProjectEpic.harvest_assignment_changeset/2,
       search: &ProjectEpicSearch.search/1,
       search_args_create: [harvest_assignment_id: :empty, preload: :project]
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_create(&HarvestApi.task_assignments_post/1)
     |> Sync.action_read(fn -> HarvestApi.task_assignments_get(updated_since: get_assignment_sync_date(ProjectEpic)) end)
     |> Sync.execute()
   end
 
-  def sync_time_entries do
+  def sync_time_entries(opts \\ []) do
     [
       key: :harvest_id,
       changeset: &TimeEntry.harvest_changeset/2,
       search: &TimeEntrySearch.search/1
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_read(&time_entries_read/0)
     |> Sync.execute()
   end
 
-  def sync_users do
+  def sync_users(opts \\ []) do
     [
       key: :email,
       changeset: &User.harvest_changeset/2,
       search: &UserSearch.search/1
     ]
+    |> Keyword.merge(opts)
     |> Sync.new()
     |> Sync.action_read(&HarvestApi.users_get/0)
     |> Sync.execute()

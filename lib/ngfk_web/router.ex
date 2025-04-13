@@ -15,7 +15,11 @@ defmodule NgfkWeb.Router do
     pipe_through [:api, :shared_secret]
 
     scope "/harvest" do
-      post("/timer", HarvestController, :timer)
+      post "/timer", HarvestController, :timer
+    end
+
+    scope "/moneybird" do
+      post "/hook", MoneybirdController, :hook
     end
   end
 

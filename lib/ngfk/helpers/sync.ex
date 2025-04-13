@@ -36,6 +36,7 @@ defmodule Ngfk.Helpers.Sync do
 
     context.state_actions
     |> Enum.sort_by(fn {action, _, _} -> Enum.find_index(order, &(&1 == action)) end)
+    |> Enum.reject(fn {action, _, _} -> action not in context.only end)
     |> Enum.reduce_while({:ok, context}, fn {action, func, overrides}, {:ok, context} ->
       case do_action(context, action, func, overrides) do
         {:ok, %SyncContext{} = context} -> {:cont, {:ok, context}}
