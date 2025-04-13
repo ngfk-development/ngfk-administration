@@ -1,10 +1,27 @@
 defmodule Ngfk.Services.Synchronize do
   @moduledoc false
+  alias Ngfk.Companies.Company
+  alias Ngfk.Companies.CompanyContact
+  alias Ngfk.Companies.CompanyContactSearch
+  alias Ngfk.Companies.CompanySearch
+  alias Ngfk.Repo
   alias Ngfk.Services.Harvest
   alias Ngfk.Services.Jira
   alias Ngfk.Services.Moneybird
 
-  require Logger
+  def cleanup_company(id) do
+    with {:ok, [%Company{} = company]} <- CompanySearch.search(moneybird_id: id),
+         {:ok, %Company{} = company} <- Harvest.cleanup_company(company) do
+      Repo.delete(company)
+    end
+  end
+
+  def cleanup_company_contact(id) do
+    with {:ok, [%CompanyContact{} = contact]} <- CompanyContactSearch.search(moneybird_id: id),
+         {:ok, %CompanyContact{} = contact} <- Harvest.cleanup_company_contact(contact) do
+      Repo.delete(contact)
+    end
+  end
 
   def sync(opts \\ []) do
     with :ok <- sync_users(opts),

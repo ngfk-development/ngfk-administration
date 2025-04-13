@@ -8,8 +8,10 @@ defmodule NgfkWeb.MoneybirdController do
   @action_webhook_test ["test_webhook"]
   @action_company_sync ["contact_changed", "contact_created"]
   @action_company_contact_sync ["contact_person_created", "contact_person_updated"]
+  @action_company_cleanup ["contact_destroyed"]
+  @action_company_contact_cleanup ["contact_person_destroyed"]
 
-  def hook(conn, %{"action" => action, "entity" => entity}) do
+  def hook(conn, %{"action" => action, "entity" => %{"id" => id} = entity}) do
     opts = [moneybird: [only: [:read]]]
 
     # Because of api limitations, a newly created contact person cannot be
@@ -23,6 +25,8 @@ defmodule NgfkWeb.MoneybirdController do
       action when action in @action_webhook_test -> :ok
       action when action in @action_company_sync -> Synchronize.sync_companies(opts)
       action when action in @action_company_contact_sync -> Synchronize.sync_company_contacts(opts)
+      action when action in @action_company_cleanup -> Synchronize.cleanup_company(id)
+      action when action in @action_company_contact_cleanup -> Synchronize.cleanup_company_contact(id)
     end
 
     # Always returns a success status, if anything is wrong with the sync

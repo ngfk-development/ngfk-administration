@@ -18,6 +18,18 @@ defmodule Ngfk.Services.Harvest do
   alias Ngfk.Users.User
   alias Ngfk.Users.UserSearch
 
+  def cleanup_company(%Company{} = company) do
+    with {:ok, _} <- HarvestApi.clients_delete(company) do
+      {:ok, company}
+    end
+  end
+
+  def cleanup_company_contact(%CompanyContact{} = contact) do
+    with {:ok, _} <- HarvestApi.contacts_delete(contact) do
+      {:ok, contact}
+    end
+  end
+
   def start_timer(%{user: user, project: project, epic: epic, issue: %{jira_id: _, code: _, title: _} = issue}) do
     with {:ok, [%User{} = user]} <- UserSearch.search(user),
          {:ok, [%Project{} = project]} <- ProjectSearch.search(project),

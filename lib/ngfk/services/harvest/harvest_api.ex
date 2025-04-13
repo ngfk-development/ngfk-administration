@@ -52,6 +52,12 @@ defmodule Ngfk.Services.Harvest.HarvestApi do
     end
   end
 
+  def clients_delete(%Company{} = client) when not is_nil(client.harvest_id) do
+    case fetch({:delete, "/clients/#{client.harvest_id}", []}) do
+      {:ok, _} -> {:ok, client}
+    end
+  end
+
   def contacts_get(opts \\ []) do
     params = %{
       client_id: opts[:client_id],
@@ -92,6 +98,12 @@ defmodule Ngfk.Services.Harvest.HarvestApi do
 
     case fetch({:post, "/contacts", json: data}) do
       {:ok, body} -> {:ok, HarvestParser.parse_contact(body)}
+    end
+  end
+
+  def contacts_delete(%CompanyContact{} = contact) when not is_nil(contact.harvest_id) do
+    case fetch({:delete, "/contacts/#{contact.harvest_id}", []}) do
+      {:ok, _} -> {:ok, contact}
     end
   end
 
