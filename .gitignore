@@ -25,4 +25,5 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 ngfk-*.tar
 
+.elixir_ls
 .env

@@ -4,7 +4,7 @@ defmodule Ngfk.MixProject do
   def project do
     [
       app: :ngfk,
-      version: "0.1.0",
+      version: "3.0.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -42,6 +42,7 @@ defmodule Ngfk.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:phoenix, "~> 1.7.21"},
       {:postgrex, ">= 0.0.0"},
+      {:quantum, "~> 3.0"},
       {:req, "~> 0.5.0"},
       {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
       {:swoosh, "~> 1.5"},

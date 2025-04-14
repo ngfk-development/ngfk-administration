@@ -22,19 +22,12 @@ end
 
 if config_env() == :prod do
   database_url =
-    System.get_env("DATABASE_URL") ||
-      raise """
-      environment variable DATABASE_URL is missing.
-      For example: ecto://USER:PASS@HOST/DATABASE
-      """
+    "DATABASE_URL"
+    |> System.get_env()
+    |> to_string()
+    |> String.replace_leading("postgres://", "ecto://")
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
-
-  config :ngfk, Ngfk.Repo,
-    # ssl: true,
-    url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    socket_options: maybe_ipv6
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
@@ -51,7 +44,12 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
-  config :ngfk, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  config :ngfk, Ngfk.Repo,
+    # ssl: true,
+    url: database_url,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    socket_options: maybe_ipv6,
+    socket_dir: database_url |> then(&URI.parse(&1).query) |> then(&(&1 && URI.decode_query(&1)["host"]))
 
   config :ngfk, NgfkWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
@@ -63,7 +61,24 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base
+    secret_key_base: secret_key_base,
+    shared_secret: System.get_env("NGFK_SHARED_SECRET")
+
+  config :ngfk, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+
+  config :ngfk, :harvest,
+    endpoint: System.get_env("HARVEST_ENDPOINT"),
+    token: System.get_env("HARVEST_TOKEN"),
+    account_id: System.get_env("HARVEST_ACCOUNT_ID")
+
+  config :ngfk, :jira,
+    endpoint: System.get_env("JIRA_ENDPOINT"),
+    token: System.get_env("JIRA_TOKEN"),
+    username: System.get_env("JIRA_USERNAME")
+
+  config :ngfk, :moneybird,
+    endpoint: System.get_env("MONEYBIRD_ENDPOINT"),
+    token: System.get_env("MONEYBIRD_TOKEN")
 
   # ## SSL Support
   #

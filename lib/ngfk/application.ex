@@ -12,11 +12,8 @@ defmodule Ngfk.Application do
       Ngfk.Repo,
       {DNSCluster, query: Application.get_env(:ngfk, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Ngfk.PubSub},
-      # Start the Finch HTTP client for sending emails
       {Finch, name: Ngfk.Finch},
-      # Start a worker by calling: Ngfk.Worker.start_link(arg)
-      # {Ngfk.Worker, arg},
-      # Start to serve requests, typically the last entry
+      Ngfk.Scheduler,
       NgfkWeb.Endpoint
     ]
 

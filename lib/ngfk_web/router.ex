@@ -25,6 +25,10 @@ defmodule NgfkWeb.Router do
     scope "/moneybird" do
       post "/hook", MoneybirdController, :hook
     end
+
+    scope "/sync" do
+      post "/all", SyncController, :all
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
