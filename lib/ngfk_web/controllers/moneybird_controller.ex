@@ -31,6 +31,6 @@ defmodule NgfkWeb.MoneybirdController do
 
     # Always returns a success status, if anything is wrong with the sync
     # process we don't want moneybird to retry the failed webhook.
-    conn |> put_status(200) |> json(%{status: "ok"})
+    conn |> put_status(200) |> json(%{message: "ok"})
   end
 end

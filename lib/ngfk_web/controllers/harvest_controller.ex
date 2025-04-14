@@ -19,7 +19,7 @@ defmodule NgfkWeb.HarvestController do
       {:has_epic, false} ->
         conn
         |> put_status(400)
-        |> json(%{error: "EPIC_MISSING", message: "Failed to start timer - Issue needs an epic"})
+        |> json(%{error: "HARVEST_TIMER_EPIC_MISSING", message: "Failed to start timer - Issue needs an epic"})
     end
   end
 end
