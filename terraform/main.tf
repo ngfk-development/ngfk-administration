@@ -51,7 +51,7 @@ module "database" {
   source = "./database"
 
   authorized_networks = [
-    { name = "Home", value = "85.223.75.41" }
+    { name = "Home", value = "31.20.112.229" }
   ]
 
   database_name = local.env["DATABASE_NAME"]
